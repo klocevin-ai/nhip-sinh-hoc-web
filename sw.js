@@ -1,5 +1,5 @@
 const PREFIX = 'nhip-sinh-hoc-';
-const CACHE = PREFIX + 'v6';
+const CACHE = PREFIX + 'v7';
 const CORE = ['./', './index.html', './admin.html', './manifest.webmanifest', './firebase-config.js?v=20261123', './cloud-loader.js', './independent.js', './independent.css', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './vendor/tailwind.css', './vendor/tailwind-admin.css', './vendor/fontawesome/all.min.css', './vendor/fonts/fonts.css', './vendor/fontawesome/webfonts/fa-solid-900.woff2', './vendor/fontawesome/webfonts/fa-regular-400.woff2', './vendor/fontawesome/webfonts/fa-brands-400.woff2', ...['quicksand','jetbrains-mono'].flatMap(f => ['latin','latin-ext','vietnamese'].map(l => `./vendor/fonts/${f}-400-${l}.woff2`))];
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(CACHE);

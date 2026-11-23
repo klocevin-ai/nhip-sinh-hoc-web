@@ -26,23 +26,43 @@
       <article class="nsh-card nsh-wide" id="nsh-signup-card">
         <p class="nsh-kicker">TÀI KHOẢN CỦA BẠN</p>
         <h2>Đăng ký để lưu tiến trình & chọn gói</h2>
-        <p class="nsh-muted">Tạo tài khoản bằng email và mật khẩu, điền lớp/trường rồi chọn gói ngay dưới đây. Có mạng → hồ sơ lưu trên máy chủ để Admin quản lý; mất mạng → vẫn dùng được trên thiết bị. Không tự thu phí.</p>
+        <p class="nsh-muted">Chọn bạn là <b>học sinh</b> hay <b>người tiêu dùng</b> (phụ huynh, cá nhân) để form và gói hiển thị phù hợp. Có mạng → hồ sơ lưu trên máy chủ để Admin quản lý; mất mạng → vẫn dùng được trên thiết bị. Không tự thu phí.</p>
+        <div class="nsh-seg" id="nsh-audience" role="group" aria-label="Bạn là">
+          <button type="button" data-aud="student" aria-pressed="true">🎓 Học sinh</button>
+          <button type="button" data-aud="consumer" aria-pressed="false">👤 Người tiêu dùng</button>
+        </div>
+        <p class="nsh-seg-hint" id="nsh-aud-hint">Dành cho học sinh THPT: theo dõi giờ ngủ, giới nghiêm, báo cáo cho phụ huynh.</p>
         <div id="nsh-reg-error" class="nsh-alert err hidden" role="alert"></div>
         <div class="nsh-form-grid" style="margin-top:14px">
-          <div class="nsh-col-2"><label for="nsh-reg-name">Họ và tên *</label><input id="nsh-reg-name" maxlength="60" placeholder="Nguyễn Văn A" autocomplete="name"></div>
+          <div class="nsh-col-2"><label for="nsh-reg-name" id="nsh-lbl-name">Họ và tên học sinh *</label><input id="nsh-reg-name" maxlength="60" placeholder="Nguyễn Văn A" autocomplete="name"></div>
           <div><label for="nsh-reg-email">Email *</label><input id="nsh-reg-email" type="email" maxlength="100" placeholder="ten@email.com" autocomplete="email"></div>
           <div><label for="nsh-reg-phone">Số điện thoại</label><input id="nsh-reg-phone" type="tel" maxlength="15" placeholder="0941144975" autocomplete="tel"></div>
-          <div><label for="nsh-reg-class">Lớp / trường</label><input id="nsh-reg-class" maxlength="80" placeholder="10/3 — THPT Nguyễn Đình Chiểu"></div>
+          <div class="nsh-col-2" id="nsh-class-wrap"><label for="nsh-reg-class" id="nsh-lbl-class">Lớp / trường</label><input id="nsh-reg-class" maxlength="80" placeholder="10/3 — THPT Nguyễn Đình Chiểu"></div>
+          <div id="nsh-student-extra"><label for="nsh-reg-goal">Mục tiêu chính</label>
+            <select id="nsh-reg-goal">
+              <option value="sleep-2230">Ngủ trước 22:30</option>
+              <option value="cut-1h">Giảm 1 giờ dùng máy mỗi tối</option>
+              <option value="study-first">Học xong mới dùng máy</option>
+            </select>
+          </div>
+          <div id="nsh-consumer-extra" class="hidden"><label for="nsh-reg-for">Bạn dùng cho</label>
+            <select id="nsh-reg-for">
+              <option value="self">Bản thân</option>
+              <option value="child">Con em</option>
+              <option value="family">Cả gia đình</option>
+            </select>
+          </div>
           <div><label for="nsh-reg-pass">Mật khẩu * (tối thiểu 6 ký tự)</label><input id="nsh-reg-pass" type="password" maxlength="80" placeholder="••••••" autocomplete="new-password"></div>
           <div><label for="nsh-reg-pass2">Nhập lại mật khẩu *</label><input id="nsh-reg-pass2" type="password" maxlength="80" placeholder="••••••" autocomplete="new-password"></div>
           <div class="nsh-col-2">
-            <label>Gói đăng ký</label>
+            <label id="nsh-lbl-plan">Gói đăng ký</label>
             <div class="nsh-plan-pick" id="nsh-reg-plan">
-              <button type="button" class="nsh-plan-opt" data-plan="free" aria-pressed="true"><b>Học sinh</b><span>Miễn phí</span></button>
-              <button type="button" class="nsh-plan-opt" data-plan="thuong" aria-pressed="false"><b>Gói Thường</b><span>29.000đ/tháng · 129.000đ/năm</span></button>
-              <button type="button" class="nsh-plan-opt" data-plan="nghiem-tuc" aria-pressed="false"><b>Gói Nghiêm túc</b><span>79.000đ/tháng · 379.000đ/năm</span></button>
-              <button type="button" class="nsh-plan-opt" data-plan="truong" aria-pressed="false"><b>Gói Trường</b><span>5.000.000đ/năm</span></button>
+              <button type="button" class="nsh-plan-opt" data-plan="free" aria-pressed="true"><b data-pname>Học sinh</b><span data-pdesc>Miễn phí</span></button>
+              <button type="button" class="nsh-plan-opt" data-plan="thuong" aria-pressed="false"><b data-pname>Gói Thường</b><span data-pdesc>29.000đ/tháng · 129.000đ/năm</span></button>
+              <button type="button" class="nsh-plan-opt" data-plan="nghiem-tuc" aria-pressed="false"><b data-pname>Gói Nghiêm túc</b><span data-pdesc>79.000đ/tháng · 379.000đ/năm</span></button>
+              <button type="button" class="nsh-plan-opt" data-plan="truong" aria-pressed="false"><b data-pname>Gói Trường</b><span data-pdesc>5.000.000đ/năm</span></button>
             </div>
+            <p class="nsh-seg-hint" id="nsh-plan-hint"></p>
           </div>
         </div>
         <div class="nsh-actions">
@@ -68,9 +88,11 @@
           <div class="nsh-avatar" id="nsh-acc-avatar">N</div>
           <div><h2 id="nsh-acc-name" style="margin:0">—</h2><p class="nsh-tiny" id="nsh-acc-email" style="margin:2px 0 0">—</p></div>
         </div>
+        <div class="nsh-kv"><span>Nhóm</span><b id="nsh-acc-audience">—</b></div>
+        <div class="nsh-kv"><span id="nsh-acc-detail-label">Mục tiêu</span><b id="nsh-acc-detail">—</b></div>
         <div class="nsh-kv"><span>Gói hiện tại</span><b id="nsh-acc-plan">—</b></div>
         <div class="nsh-kv"><span>Số điện thoại</span><b id="nsh-acc-phone">—</b></div>
-        <div class="nsh-kv"><span>Lớp / trường</span><b id="nsh-acc-class">—</b></div>
+        <div class="nsh-kv" id="nsh-acc-class-row"><span>Lớp / trường</span><b id="nsh-acc-class">—</b></div>
         <div class="nsh-kv"><span>Ngày đăng ký</span><b id="nsh-acc-since">—</b></div>
         <div class="nsh-actions">
           <button class="nsh-btn secondary" onclick="switchTab('plans')">Xem chi tiết gói & dùng thử →</button>
@@ -83,10 +105,10 @@
         <h2>Các gói đang áp dụng</h2>
         <p class="nsh-muted">Chọn nhanh ở đây, hoặc mở tab <b>Gói &amp; Phí</b> để dùng thử 3 ngày và tính chi phí. Chọn gói không tự trừ tiền.</p>
         <div class="nsh-rows" id="nsh-home-plans">
-          <div class="nsh-plan-row"><div><b>Học sinh</b><small>Miễn phí — đầy đủ tính năng cốt lõi</small></div><button class="nsh-pick" data-pick="free">Chọn</button></div>
-          <div class="nsh-plan-row"><div><b>Gói Thường</b><small>29.000đ/tháng · 129.000đ/năm — thêm báo cáo tuần</small></div><button class="nsh-pick" data-pick="thuong">Chọn</button></div>
-          <div class="nsh-plan-row"><div><b>Gói Nghiêm túc</b><small>79.000đ/tháng · 379.000đ/năm — thêm AI online & xuất dữ liệu</small></div><button class="nsh-pick" data-pick="nghiem-tuc">Chọn</button></div>
-          <div class="nsh-plan-row"><div><b>Gói Trường</b><small>5.000.000đ/năm — quản lý cả lớp</small></div><button class="nsh-pick" data-pick="truong">Chọn</button></div>
+          <div class="nsh-plan-row" data-row="free"><div><b>Học sinh</b><small>Miễn phí — đầy đủ tính năng cốt lõi</small></div><button class="nsh-pick" data-pick="free">Chọn</button></div>
+          <div class="nsh-plan-row" data-row="thuong"><div><b>Gói Thường</b><small>29.000đ/tháng · 129.000đ/năm — thêm báo cáo tuần</small></div><button class="nsh-pick" data-pick="thuong">Chọn</button></div>
+          <div class="nsh-plan-row" data-row="nghiem-tuc"><div><b>Gói Nghiêm túc</b><small>79.000đ/tháng · 379.000đ/năm — thêm AI online & xuất dữ liệu</small></div><button class="nsh-pick" data-pick="nghiem-tuc">Chọn</button></div>
+          <div class="nsh-plan-row" data-row="truong"><div><b>Gói Trường</b><small>5.000.000đ/năm — quản lý cả lớp</small></div><button class="nsh-pick" data-pick="truong">Chọn</button></div>
         </div>
         <p class="nsh-tiny" style="margin-top:12px">Đặt mua thật: gọi/Zalo <b>094 114 4975</b> · klocevin@gmail.com</p>
       </article>
@@ -467,6 +489,44 @@
   const vn = (s) => String(s == null ? '' : s).trim();
 
   let pickedPlan = 'free';
+  let audience = 'student';
+
+  const GOAL_LABEL = {
+    'sleep-2230': 'Ngủ trước 22:30',
+    'cut-1h': 'Giảm 1 giờ dùng máy',
+    'study-first': 'Học xong mới dùng máy'
+  };
+  const FOR_LABEL = { self: 'Bản thân', child: 'Con em', family: 'Cả gia đình' };
+  const AUD_LABEL = { student: '🎓 Học sinh', consumer: '👤 Người tiêu dùng' };
+
+  const PLAN_TEXT = {
+    student: {
+      free: ['Học sinh', 'Miễn phí'],
+      thuong: ['Gói Thường', '29.000đ/tháng · 129.000đ/năm'],
+      'nghiem-tuc': ['Gói Nghiêm túc', '79.000đ/tháng · 379.000đ/năm'],
+      truong: ['Gói Trường', '5.000.000đ/năm']
+    },
+    consumer: {
+      free: ['Cơ bản', 'Miễn phí — tự theo dõi thói quen ngủ'],
+      thuong: ['Gói Thường', '29.000đ/tháng · 129.000đ/năm — báo cáo cho 1 người'],
+      'nghiem-tuc': ['Gói Nghiêm túc', '79.000đ/tháng · 379.000đ/năm — nhiều thành viên + AI online'],
+      truong: ['Gói Trường', '5.000.000đ/năm — triển khai cho nhà trường']
+    }
+  };
+  const ROW_DESC = {
+    student: {
+      free: 'Miễn phí — đầy đủ tính năng cốt lõi',
+      thuong: '29.000đ/tháng · 129.000đ/năm — thêm báo cáo tuần',
+      'nghiem-tuc': '79.000đ/tháng · 379.000đ/năm — thêm AI online & xuất dữ liệu',
+      truong: '5.000.000đ/năm — quản lý cả lớp'
+    },
+    consumer: {
+      free: 'Miễn phí — tự theo dõi thói quen ngủ',
+      thuong: '29.000đ/tháng · 129.000đ/năm — báo cáo tuần gửi phụ huynh',
+      'nghiem-tuc': '79.000đ/tháng · 379.000đ/năm — nhiều thành viên, AI online',
+      truong: '5.000.000đ/năm — triển khai cho nhà trường'
+    }
+  };
 
   /* ---------------- lưu trữ ---------------- */
   function readAccounts() {
@@ -544,6 +604,48 @@
   }
 
   /* ---------------- giao diện ---------------- */
+  /* ---------- đổi giao diện theo nhóm đối tượng ---------- */
+  function setAudience(next) {
+    audience = next === 'consumer' ? 'consumer' : 'student';
+    const isSt = audience === 'student';
+
+    document.querySelectorAll('#nsh-audience button').forEach((b) => {
+      b.setAttribute('aria-pressed', b.dataset.aud === audience ? 'true' : 'false');
+    });
+    const hint = $('nsh-aud-hint');
+    if (hint) hint.textContent = isSt
+      ? 'Dành cho học sinh THPT: theo dõi giờ ngủ, giới nghiêm 22:30, báo cáo gửi phụ huynh.'
+      : 'Dành cho phụ huynh/cá nhân: theo dõi giờ ngủ của con hoặc của bạn, nhận báo cáo tuần.';
+
+    if ($('nsh-lbl-name')) $('nsh-lbl-name').textContent = isSt ? 'Họ và tên học sinh *' : 'Họ và tên *';
+    if ($('nsh-lbl-class')) $('nsh-lbl-class').textContent = isSt ? 'Lớp / trường' : 'Ghi chú (không bắt buộc)';
+    const classEl = $('nsh-reg-class');
+    if (classEl) classEl.placeholder = isSt ? '10/3 — THPT Nguyễn Đình Chiểu' : 'Ví dụ: phụ huynh học sinh 10/3';
+
+    const stExtra = $('nsh-student-extra'), coExtra = $('nsh-consumer-extra');
+    if (stExtra) stExtra.classList.toggle('hidden', !isSt);
+    if (coExtra) coExtra.classList.toggle('hidden', isSt);
+    if ($('nsh-lbl-plan')) $('nsh-lbl-plan').textContent = isSt ? 'Gói đăng ký' : 'Gói đăng ký (dùng cho gia đình / cá nhân)';
+    if ($('nsh-plan-hint')) $('nsh-plan-hint').textContent = isSt
+      ? 'Gói Trường dành cho nhà trường; phụ huynh thường chọn Gói Thường hoặc Nghiêm túc.'
+      : 'Gói Trường chỉ dành cho nhà trường. Gói Thường / Nghiêm túc dùng cho phụ huynh, cá nhân.';
+
+    document.querySelectorAll('#nsh-reg-plan .nsh-plan-opt').forEach((b) => {
+      const key = b.dataset.plan;
+      const pair = (PLAN_TEXT[audience] || PLAN_TEXT.student)[key] || [key, ''];
+      const nameEl = b.querySelector('[data-pname]'), descEl = b.querySelector('[data-pdesc]');
+      if (nameEl) nameEl.textContent = pair[0];
+      if (descEl) descEl.textContent = pair[1];
+      b.classList.toggle('hidden', !isSt && key === 'truong');
+    });
+    document.querySelectorAll('#nsh-home-plans .nsh-plan-row').forEach((row) => {
+      const key = row.dataset.row;
+      const small = row.querySelector('small');
+      if (small) small.textContent = (ROW_DESC[audience] || ROW_DESC.student)[key] || '';
+      row.classList.toggle('hidden', !isSt && key === 'truong');
+    });
+  }
+
   function markPlanButtons() {
     const logged = !!currentAccount();
     let activeKey = pickedPlan;
@@ -568,6 +670,7 @@
 
     if (acc) {
       pickedPlan = acc.plan || 'free';
+      if (acc.audience) setAudience(acc.audience);
       const initial = (acc.name || 'N').trim().charAt(0).toUpperCase();
       if ($('nsh-acc-avatar')) $('nsh-acc-avatar').textContent = initial;
       if ($('nsh-acc-name')) $('nsh-acc-name').textContent = acc.name || 'Thành viên';
@@ -580,6 +683,14 @@
       } else if (typeof S !== 'undefined' && S && S.plan && S.plan.key) {
         eff = S.plan.key;
       }
+      const isSt = (acc.audience || 'student') === 'student';
+      if ($('nsh-acc-audience')) $('nsh-acc-audience').textContent = AUD_LABEL[isSt ? 'student' : 'consumer'];
+      if ($('nsh-acc-detail-label')) $('nsh-acc-detail-label').textContent = isSt ? 'Mục tiêu' : 'Dùng cho';
+      if ($('nsh-acc-detail')) $('nsh-acc-detail').textContent = isSt
+        ? (GOAL_LABEL[acc.goal] || '—')
+        : (FOR_LABEL[acc.forWhom] || '—');
+      const classRow = $('nsh-acc-class-row');
+      if (classRow) classRow.classList.toggle('hidden', !isSt);
       if ($('nsh-acc-plan')) $('nsh-acc-plan').textContent = PLAN_NAME[eff] + (isTrial ? ' · đang dùng thử' : '');
       if ($('nsh-acc-phone')) $('nsh-acc-phone').textContent = acc.phone || '—';
       if ($('nsh-acc-class')) $('nsh-acc-class').textContent = acc.className || '—';
@@ -615,6 +726,10 @@
     const email = vn(($('nsh-reg-email') || {}).value).toLowerCase();
     const phone = vn(($('nsh-reg-phone') || {}).value);
     const className = vn(($('nsh-reg-class') || {}).value);
+    const goal = vn(($('nsh-reg-goal') || {}).value) || 'sleep-2230';
+    const forWhom = vn(($('nsh-reg-for') || {}).value) || 'self';
+    const aud = audience === 'consumer' ? 'consumer' : 'student';
+    const plan = (aud === 'consumer' && pickedPlan === 'truong') ? 'thuong' : pickedPlan;
     const pass = ($('nsh-reg-pass') || {}).value || '';
     const pass2 = ($('nsh-reg-pass2') || {}).value || '';
 
@@ -640,17 +755,20 @@
         const fireUser = await sm.registerFirebase(name, email, pass);
         await sm.saveProfile({
           name, phone, className,
-          plan: pickedPlan,
-          planLabel: PLAN_NAME[pickedPlan],
+          audience: aud,
+          goal: aud === 'student' ? goal : '',
+          forWhom: aud === 'consumer' ? forWhom : '',
+          plan,
+          planLabel: PLAN_NAME[plan],
           signupAt: Date.now(),
           app: 'nhip-sinh-hoc'
         });
-        acc = { email, name, phone, className, plan: pickedPlan, uid: fireUser.uid, cloud: true, createdAt: Date.now() };
+        acc = { email, name, phone, className, audience: aud, goal, forWhom, plan, uid: fireUser.uid, cloud: true, createdAt: Date.now() };
       } else {
         // Không có máy chủ: tài khoản lưu trên thiết bị, mật khẩu băm SHA-256.
         const salt = randSalt();
         const passHash = await hashPass(pass, salt);
-        acc = { email, name, phone, className, plan: pickedPlan, salt, passHash, cloud: false, createdAt: Date.now() };
+        acc = { email, name, phone, className, audience: aud, goal, forWhom, plan, salt, passHash, cloud: false, createdAt: Date.now() };
       }
     } catch (e) {
       busy(false);
@@ -695,9 +813,19 @@
         await sm.loginFirebase(email, pass);
         const prof = (await sm.readProfile()) || {};
         const plan = PLAN_KEYS.includes(prof.plan) ? prof.plan : ((acc && acc.plan) || 'free');
-        if (acc) { acc.plan = plan; acc.cloud = true; writeAccounts(accounts); }
-        else {
-          acc = { email, name: prof.name || email.split('@')[0], phone: prof.phone || '', className: prof.className || '', plan, cloud: true, createdAt: prof.createdAt || Date.now() };
+        const aud = prof.audience === 'consumer' ? 'consumer' : 'student';
+        if (acc) {
+          acc.plan = plan; acc.cloud = true;
+          acc.audience = aud;
+          if (prof.goal) acc.goal = prof.goal;
+          if (prof.forWhom) acc.forWhom = prof.forWhom;
+          writeAccounts(accounts);
+        } else {
+          acc = {
+            email, name: prof.name || email.split('@')[0], phone: prof.phone || '', className: prof.className || '',
+            audience: aud, goal: prof.goal || 'sleep-2230', forWhom: prof.forWhom || 'self',
+            plan, cloud: true, createdAt: prof.createdAt || Date.now()
+          };
           accounts.unshift(acc); writeAccounts(accounts);
         }
         setSession(email);
@@ -724,6 +852,10 @@
   /* ---------------- chọn gói ---------------- */
   function selectPlan(key) {
     if (!PLAN_KEYS.includes(key)) return;
+    if (key === 'truong' && audience === 'consumer') {
+      toast('Gói Trường dành cho nhà trường', 'Phụ huynh/cá nhân chọn Gói Thường hoặc Gói Nghiêm túc. Muốn triển khai cho trường, gọi 094 114 4975.', 'info');
+      return;
+    }
     pickedPlan = key;
     const acc = currentAccount();
     if (!acc) {
@@ -756,6 +888,14 @@
     document.querySelectorAll('#nsh-reg-plan .nsh-plan-opt').forEach((b) => {
       b.addEventListener('click', () => { pickedPlan = b.dataset.plan; markPlanButtons(); showErr('nsh-reg-error', ''); });
     });
+    document.querySelectorAll('#nsh-audience button').forEach((b) => {
+      b.addEventListener('click', () => {
+        setAudience(b.dataset.aud);
+        if (audience === 'consumer' && pickedPlan === 'truong') pickedPlan = 'thuong';
+        markPlanButtons();
+        showErr('nsh-reg-error', '');
+      });
+    });
     document.querySelectorAll('#nsh-home-plans .nsh-pick').forEach((b) => {
       b.addEventListener('click', () => selectPlan(b.dataset.pick));
     });
@@ -778,6 +918,7 @@
       on(id, 'keydown', (e) => { if (e.key === 'Enter') { id.startsWith('nsh-login') ? login() : register(); } });
     });
 
+    setAudience(audience);
     render();
     const acc = currentAccount();
     if (acc) { pickedPlan = acc.plan || 'free'; applyPlan(acc.plan || 'free', { clearTrial: false }); render(); }

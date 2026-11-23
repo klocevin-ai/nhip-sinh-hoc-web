@@ -20,7 +20,8 @@ Dữ liệu lưu cục bộ trên máy người dùng (localStorage với tiền
 
 Form nằm ngay dưới phần giới thiệu: họ tên, email, điện thoại, lớp/trường, mật khẩu và 4 lựa chọn gói. Bảng "Các gói đang áp dụng" cho chọn nhanh.
 
-- **Có mạng / đã cấu hình Firebase** (`firebase-config.js`): tài khoản được tạo thật bằng Firebase Auth; hồ sơ gồm `name`, `phone`, `className`, `plan`, `planLabel`, `signupAt`, `app` được ghi vào `users/{uid}` để trang `admin.html` đọc được.
+- **Có mạng / đã cấu hình Firebase** (`firebase-config.js`): tài khoản được tạo thật bằng Firebase Auth; hồ sơ gồm `name`, `audience`, `goal` (học sinh) hoặc `forWhom` (người tiêu dùng), `phone`, `className`, `plan`, `planLabel`, `signupAt`, `app` được ghi vào `users/{uid}` để trang `admin.html` đọc được.
+- **Hai đối tượng**: nút chọn "🎓 Học sinh" / "👤 Người tiêu dùng" đổi nhãn field, mục tiêu/dùng cho, mô tả gói; gói Trường bị ẩn với nhóm người tiêu dùng.
 - **Mất mạng / chưa có SDK**: app tự lưu tài khoản cục bộ (mật khẩu băm SHA-256 + salt), vẫn đăng nhập được bình thường.
 - Chọn gói trên trang chủ hoặc trong tab "Gói & Phí" đều cập nhật cùng một hồ sơ; quyền lợi áp dụng ngay.
 - Trang chủ luôn mở, không bị lớp phủ đăng nhập chặn.

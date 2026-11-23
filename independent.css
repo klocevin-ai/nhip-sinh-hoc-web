@@ -41,6 +41,10 @@ body { background-image: radial-gradient(ellipse at 20% 0%, #29204866, transpare
 .nsh-plan-row small { font-size: 11px; color: #8f97ae; }
 .nsh-plan-row .nsh-pick { font-size: 11px; font-weight: 700; padding: 6px 11px; border-radius: 9px; border: 1px solid #b6a1ff55; color: #cfc2ff; background: #b6a1ff12; cursor: pointer; white-space: nowrap; }
 .nsh-plan-row .nsh-pick[data-active="1"] { background: #b6a1ff; color: #171126; border-color: #b6a1ff; }
+.nsh-seg { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+.nsh-seg button { padding: 8px 13px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid #ffffff24; background: #0b0f1c; color: #a9b0c6; cursor: pointer; }
+.nsh-seg button[aria-pressed="true"] { background: #b6a1ff1f; border-color: #b6a1ff; color: #ded4ff; }
+.nsh-seg-hint { font-size: 11.5px; color: #8f97ae; margin: 2px 0 0; line-height: 1.6; }
 .nsh-acc-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .nsh-avatar { width: 42px; height: 42px; border-radius: 999px; background: linear-gradient(135deg, #b6a1ff, #6d8cff); color: #14101f; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 16px; flex: 0 0 auto; }
 .nsh-kv { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; padding: 7px 0; border-bottom: 1px dashed #ffffff14; }
