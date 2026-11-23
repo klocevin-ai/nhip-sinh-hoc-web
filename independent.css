@@ -1,0 +1,23 @@
+:root { --nsh-accent: #b6a1ff; }
+body { background-image: radial-gradient(ellipse at 20% 0%, #29204866, transparent 55%) !important; }
+.nsh-hero { padding: 38px; border: 1px solid #a78bfa35; border-radius: 28px; background: linear-gradient(120deg,#19152e,#0e1828); position: relative; overflow: hidden; }
+.nsh-hero:after { content: '☾'; position: absolute; right: 25px; top: -25px; font-size: 210px; color: #b5a0ff17; pointer-events: none; }
+.nsh-kicker { color: #bcb1ed; text-transform: uppercase; letter-spacing: 2px; font-size: 11px; font-weight: 700; }
+.nsh-hero h1 { font-size: clamp(28px,5vw,43px); font-weight: 800; line-height: 1.25; max-width: 650px; margin: 18px 0; }
+.nsh-muted { color: #a5adc4; font-size: 13px; line-height: 1.8; }
+.nsh-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 20px 0; }
+.nsh-card { background: #101628; border: 1px solid #ffffff12; border-radius: 22px; padding: 23px; }
+.nsh-card h2 { font-weight: 700; font-size: 16px; margin-bottom: 12px; }
+.nsh-card strong { display: block; color: #d7cdff; font-size: 26px; margin: 8px 0; }
+.nsh-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.nsh-btn { min-height: 44px; padding: 11px 18px; border-radius: 13px; background: #b6a1ff; color: #171126; font-size: 13px; font-weight: 700; cursor: pointer; }
+.nsh-btn.secondary { color: #d8d1ef; border: 1px solid #ffffff26; background: #ffffff07; }
+.nsh-step { display: flex; gap: 16px; align-items: flex-start; margin: 17px 0; }
+.nsh-step time { color: #c4b5fd; font-weight: 700; font-size: 14px; min-width: 46px; }
+.nsh-step p { font-size: 12px; color: #a5adc4; line-height: 1.7; }
+.nsh-wide { grid-column: span 2; }
+.nsh-note { border-left: 3px solid #a78bfa; padding: 10px 16px; margin: 20px 0; background: #a78bfa09; }
+.nsh-card label { display: block; font-size: 13px; color: #bcb4d3; margin-bottom: 7px; }
+.nsh-card input { background: #060914; border: 1px solid #ffffff22; border-radius: 12px; padding: 10px; color: white; width: 100%; }
+#tab-btn-home { color: #c4b5fd; padding: 10px 16px; border-radius: 16px; font-size: 12px; font-weight: 700; }
+@media(max-width:700px) { .nsh-grid { grid-template-columns: 1fr; } .nsh-wide { grid-column: auto; } .nsh-hero { padding: 25px; } }

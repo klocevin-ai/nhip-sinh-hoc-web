@@ -1,0 +1,153 @@
+rules_version = '2';
+// ============================================================
+//  SLEEPMATE Pro — Firestore Security Rules (v3.4)
+//  Admin: klocevin@gmail.com
+//
+//  Nguyên tắc:
+//   - Thành viên chỉ đọc/ghi dữ liệu CỦA CHÍNH MÌNH.
+//   - Không ai được tự phong mình làm admin.
+//   - Admin (email trong danh sách) đọc được mọi người dùng,
+//     gửi inbox, cài luật nhóm config/groupRules, xoá dữ liệu.
+// ============================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Admin = email trong danh sách cứng bên dưới.
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email != null
+        && string(request.auth.token.email).lower() in ['klocevin@gmail.com'];
+    }
+
+    // Thành viên tự tạo hồ sơ chỉ được ghi trường cơ bản
+    // và BẮT BUỘC vai trò 'member' (không thể tự nâng admin).
+    function validUserCreate() {
+      return request.resource.data.keys().hasOnly([
+          'uid', 'email', 'name', 'role', 'createdAt', 'lastSeenAt'
+        ])
+        && request.resource.data.role == 'member'
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    function validUserUpdate() {
+      return !('role' in request.resource.data)
+        || request.resource.data.role == 'member';
+    }
+
+    match /users/{uid} {
+      allow get, list: if isOwner(uid) || isAdmin();
+      allow create: if isAdmin() || validUserCreate();
+      allow update: if isAdmin() || (isOwner(uid) && validUserUpdate());
+      allow delete: if isAdmin();
+
+      // Dữ liệu giấc ngủ theo ngày (member ghi, admin xoá được)
+      match /days/{day} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow write: if isOwner(uid);
+        allow delete: if isAdmin();
+      }
+
+      // Lịch sử các lần khoá máy
+      match /locks/{lock} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow create: if isOwner(uid);
+        allow delete: if isAdmin();
+      }
+
+      // Hộp thư: Admin gửi vào, chủ sở hữu đọc & đánh dấu đã đọc
+      match /inbox/{msg} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow create: if isAdmin();
+        allow update, delete: if isOwner(uid) || isAdmin();
+      }
+    }
+
+    // Luật chung do Admin quản lý
+    match /config/groupRules {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // Nguồn đăng ký tài khoản (trang quản trị admin.html)
+    //  - Danh sách nguồn do Admin quản lý; mọi người đã đăng nhập chỉ ĐỌC được
+    //    để app có thể hiển thị lựa chọn (nếu về sau bật chọn nguồn khi đăng ký).
+    //  - Nguồn của từng tài khoản nằm trong users/{uid}.signupSource — Admin ghi.
+    match /config/signupSources {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    //  BỘ ĐẾM LƯỢT TRUY CẬP (tracker.js, v3.3)
+    //  - Mỗi máy khách đăng nhập ẩn danh (hoặc "tài khoản khách"), chỉ ghi
+    //    được hồ sơ CỦA MÌNH (ownerUid = uid Firebase của chính máy đó).
+    //  - Khách KHÔNG đọc được dữ liệu → không xem được số liệu của nhau.
+    //  - Chỉ Admin đọc toàn bộ để làm báo cáo.
+    // ============================================================
+
+    // Hồ sơ người truy cập: 1 document / 1 máy
+    match /visits/{visitorId} {
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.ownerUid == request.auth.uid;
+      allow read, delete: if isAdmin();
+
+      // Mỗi lần mở app = 1 phiên
+      match /sessions/{sessionId} {
+        allow create: if signedIn()
+          && request.resource.data.ownerUid == request.auth.uid;
+        allow read, delete: if isAdmin();
+      }
+    }
+
+    // Tổng hợp theo ngày — khách chỉ được cộng dồn, không đọc
+    match /visitsDaily/{day} {
+      allow create, update: if signedIn();
+      allow read, delete: if isAdmin();
+    }
+
+    // ============================================================
+    //  ĐÊM ĐỒNG BỘ (v3.4) — "sessions/{nightId}"
+    //  Mỗi đêm là một document công khai TRONG NỘI BỘ NHÓM:
+    //   - Mọi thành viên đã đăng nhập ĐỌC được trạng thái chung
+    //     (ai đã ngủ, ai còn thức) để app tự khóa theo đám đông.
+    //   - Mỗi người chỉ ghi được ĐÚNG document con của mình
+    //     (members/{uid}); không sửa được của người khác.
+    //   - Không ai xoá được cả đêm; chỉ Admin.
+    // ============================================================
+    match /sessions/{nightId} {
+      allow read: if signedIn();
+      // Thành viên được mở đêm (chỉ với các trường cơ bản), Admin sửa được mọi thứ.
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['nightId', 'openedBy', 'openedAt', 'note'])
+        && request.resource.data.openedBy == request.auth.uid;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+
+      match /members/{uid} {
+        allow read: if signedIn();
+        // Mỗi người chỉ ghi document của chính mình, với schema cố định.
+        // Các trường đo thật (screenOnSec, sleepSec, topApp…) do APK gửi lên;
+        // bản web gửi 0 — vẫn hợp lệ.
+        allow create, update: if isOwner(uid)
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.keys().hasOnly([
+               'uid', 'name', 'state', 'onsetAt', 'onsetMin',
+               'locked', 'sleepMode', 'activeSec', 'updatedAt',
+               'screenOnSec', 'outsideSec', 'scrolls', 'unlocks',
+               'sleepSec', 'appLockSec', 'topApp', 'topAppSec'
+             ]);
+        allow delete: if isAdmin() || isOwner(uid);
+      }
+    }
+  }
+}

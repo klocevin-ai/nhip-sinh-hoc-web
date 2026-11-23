@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Nhịp Sinh Học — Kỷ luật giấc ngủ",
+  "short_name": "Nhịp Sinh Học",
+  "description": "Bớt một chút điện thoại, thêm một chút giấc ngủ.",
+  "lang": "vi",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#060914",
+  "theme_color": "#060914",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

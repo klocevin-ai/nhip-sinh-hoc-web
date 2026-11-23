@@ -1,0 +1,9 @@
+# Dev-only files, not needed by the published site
+check.cjs
+live-check.cjs
+server.cjs
+setup-independent.cjs
+_preview-*.png
+node_modules/
+.DS_Store
+Thumbs.db

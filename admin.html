@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Nhịp Sinh Học — Quản Trị Nguồn Đăng Ký</title>
+<meta name="theme-color" content="#060914">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="stylesheet" href="./vendor/fontawesome/all.min.css">
+<style>
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+  .btn-bouncy { transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease; }
+  .btn-bouncy:active { transform: scale(.96); }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
+  .glass-panel { background: rgba(11,17,36,.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  input, select, textarea { color-scheme: dark; }
+  .table-wrap { max-height: calc(100vh - 360px); }
+  @media (max-width: 640px) { .table-wrap { max-height: none; } }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+<link rel="stylesheet" href="./vendor/tailwind-admin.css">
+</head>
+<body class="bg-night-950 text-slate-100 min-h-screen" style="background-image:radial-gradient(circle at 15% 0%, rgba(236,72,153,.12), transparent 40%),radial-gradient(circle at 85% 100%, rgba(99,102,241,.14), transparent 40%);">
+
+<!-- ===== MÀN CHƯA CẤU HÌNH ===== -->
+<div id="admin-setup" class="fixed inset-0 z-[1000] bg-[#060914] flex items-center justify-center p-4 hidden">
+  <div class="max-w-md w-full rounded-3xl border border-slate-800 bg-night-900/90 p-8 text-center">
+    <div class="text-5xl mb-3">🐾</div>
+    <h1 class="text-xl font-black text-white">Nhịp Sinh Học — Quản Trị</h1>
+    <p id="admin-setup-msg" class="text-xs text-slate-400 mt-2 leading-relaxed"></p>
+    <div class="mt-5 flex flex-col gap-2">
+      <button onclick="SRCADMIN.demo()" class="w-full py-3 rounded-2xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-600 text-white btn-bouncy"><i class="fa-solid fa-flask mr-1.5"></i> Dùng thử trên thiết bị này</button>
+      <button onclick="location.reload()" class="w-full py-2.5 rounded-2xl text-xs font-bold bg-night-950 border border-slate-700 text-slate-300 btn-bouncy"><i class="fa-solid fa-rotate mr-1"></i> Tải lại sau khi đã cấu hình</button>
+    </div>
+    <p class="text-center text-[10px] text-slate-600 mt-3 leading-relaxed">Chế độ cục bộ chỉ quản lý danh sách nguồn trên máy này (localStorage). Để gán nguồn cho tài khoản thật cần cấu hình Firebase.</p>
+  </div>
+</div>
+
+<!-- ===== MÀN ĐĂNG NHẬP ===== -->
+<div id="admin-login" class="fixed inset-0 z-[1000] bg-[#060914] flex items-center justify-center p-4 hidden">
+  <div class="max-w-md w-full rounded-3xl border border-slate-800 bg-night-900/90 p-8">
+    <div class="text-center mb-6">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 p-[2px]">
+        <div class="w-full h-full bg-night-950 rounded-[14px] flex items-center justify-center text-xl text-pink-400"><i class="fa-solid fa-gauge-high"></i></div>
+      </div>
+      <h1 class="text-lg font-black text-white">Quản trị Nhịp Sinh Học</h1>
+      <p class="text-[11px] text-slate-400 mt-1">Chỉ tài khoản Admin (trong <code class="text-pink-300">SLEEPMATE_ADMIN_EMAILS</code>) mới vào được.</p>
+    </div>
+    <div id="admin-login-error" class="hidden text-[11px] text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-xl px-3 py-2 mb-3"></div>
+    <div class="mb-3">
+      <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email Admin</label>
+      <input id="admin-email" type="email" autocomplete="email" class="w-full bg-night-950 border border-slate-700 text-slate-100 text-sm rounded-xl px-3.5 py-2.5 outline-none focus:border-pink-500/70" placeholder="admin@truong.edu.vn">
+    </div>
+    <div class="mb-4">
+      <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mật khẩu</label>
+      <input id="admin-pass" type="password" autocomplete="current-password" class="w-full bg-night-950 border border-slate-700 text-slate-100 text-sm rounded-xl px-3.5 py-2.5 outline-none focus:border-pink-500/70" placeholder="••••••••">
+    </div>
+    <button onclick="SRCADMIN.login()" class="w-full py-3 rounded-2xl text-xs font-bold bg-gradient-to-r from-pink-500 to-indigo-600 text-white btn-bouncy"><i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng nhập</button>
+  </div>
+</div>
+
+<!-- ===== MÀN TỪ CHỐI ===== -->
+<div id="admin-denied" class="fixed inset-0 z-[1000] bg-[#060914] flex items-center justify-center p-4 hidden">
+  <div class="max-w-md w-full rounded-3xl border border-slate-800 bg-night-900/90 p-8 text-center">
+    <div class="text-4xl mb-3 text-rose-400"><i class="fa-solid fa-lock"></i></div>
+    <h1 class="text-lg font-black text-white">Không có quyền truy cập</h1>
+    <p class="text-xs text-slate-400 mt-2 leading-relaxed">Tài khoản <span id="denied-email" class="text-pink-300"></span> không nằm trong danh sách Admin. Hãy thêm email này vào <code class="text-pink-300">SLEEPMATE_ADMIN_EMAILS</code> trong firebase-config.js (và trong firestore.rules) rồi tải lại trang.</p>
+    <button onclick="SRCADMIN.signOut()" class="mt-5 px-5 py-2.5 rounded-2xl text-xs font-bold bg-night-950 border border-slate-700 text-slate-200 btn-bouncy"><i class="fa-solid fa-right-from-bracket mr-1"></i> Đăng xuất</button>
+  </div>
+</div>
+
+<!-- ===== APP ADMIN ===== -->
+<div id="admin-app" class="hidden max-w-6xl mx-auto px-4 py-6">
+
+  <div class="glass-panel border border-slate-800/80 rounded-3xl px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 p-[2px]">
+        <div class="w-full h-full bg-night-950 rounded-[14px] flex items-center justify-center text-pink-400"><i class="fa-solid fa-gauge-high"></i></div>
+      </div>
+      <div>
+        <h1 class="text-base font-black text-white leading-tight">Quản Lý <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-300">Nguồn Đăng Ký</span></h1>
+        <p class="text-[10px] text-slate-500" id="admin-sys-name">Nhịp Sinh Học</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 bg-night-900/90 px-3 py-1.5 rounded-full border border-slate-800"><i class="fa-solid fa-shield-halved text-emerald-400"></i> <span id="admin-who" class="font-bold"></span></span>
+      <button onclick="SRCADMIN.refresh()" class="px-3 py-1.5 rounded-full text-xs font-bold bg-night-900/90 border border-slate-800 text-slate-300 btn-bouncy" title="Làm mới"><i class="fa-solid fa-rotate"></i></button>
+      <button onclick="SRCADMIN.signOut()" class="px-3 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 border border-rose-500/40 text-rose-300 btn-bouncy"><i class="fa-solid fa-right-from-bracket mr-1"></i> Thoát</button>
+    </div>
+  </div>
+
+  <!-- THẺ THỐNG KÊ -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-5">
+    <div class="glass-panel border border-slate-800 rounded-2xl p-4">
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-users text-pink-400 mr-1"></i> Tổng tài khoản</p>
+      <p class="text-2xl font-black text-white mt-1" id="stat-total">0</p>
+    </div>
+    <div class="glass-panel border border-violet-500/25 rounded-2xl p-4">
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-diagram-project text-violet-400 mr-1"></i> Số nguồn</p>
+      <p class="text-2xl font-black text-white mt-1" id="stat-sources">0</p>
+    </div>
+    <div class="glass-panel border border-emerald-500/25 rounded-2xl p-4">
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Đã gán nguồn</p>
+      <p class="text-2xl font-black text-white mt-1" id="stat-assigned">0</p>
+    </div>
+    <div class="glass-panel border border-amber-500/25 rounded-2xl p-4">
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-circle-question text-amber-400 mr-1"></i> Chưa rõ nguồn</p>
+      <p class="text-2xl font-black text-white mt-1" id="stat-unknown">0</p>
+    </div>
+  </div>
+
+  <!-- QUẢN LÝ DANH SÁCH NGUỒN -->
+  <div class="glass-panel border border-slate-800 rounded-3xl p-5 mt-5">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+      <div>
+        <h2 class="text-sm font-black text-white flex items-center gap-2"><i class="fa-solid fa-tags text-amber-400"></i> Danh sách nguồn đăng ký</h2>
+        <p class="text-[11px] text-slate-500 mt-0.5">Thêm, đổi tên, đổi màu, ẩn/hiện hoặc xoá nguồn. Lưu trên Firestore khi đã cấu hình, đồng thời giữ bản cục bộ.</p>
+      </div>
+      <button onclick="SRCADMIN.seed()" class="px-3 py-1.5 rounded-full text-[10px] font-bold bg-night-900 border border-slate-700 text-slate-300 btn-bouncy"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Nạp gợi ý</button>
+    </div>
+
+    <div class="flex flex-wrap items-end gap-2 mt-4">
+      <div class="flex-1 min-w-[180px]">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tên nguồn mới</label>
+        <input id="src-label" maxlength="48" placeholder="VD: Facebook, TikTok, Giáo viên giới thiệu…" class="w-full bg-night-950 border border-slate-700 text-slate-100 text-sm rounded-xl px-3.5 py-2.5 outline-none focus:border-pink-500/70">
+      </div>
+      <div>
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Màu</label>
+        <input id="src-color" type="color" value="#ec4899" class="w-[46px] h-[42px] bg-night-950 border border-slate-700 rounded-xl p-1 cursor-pointer">
+      </div>
+      <button onclick="SRCADMIN.add()" class="py-2.5 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-500 to-indigo-600 text-white btn-bouncy"><i class="fa-solid fa-plus mr-1"></i> Thêm nguồn</button>
+    </div>
+
+    <div id="sources-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-4">
+      <p class="text-[11px] text-slate-500 col-span-full text-center py-4">Đang tải danh sách nguồn…</p>
+    </div>
+  </div>
+
+  <!-- THỐNG KÊ THEO NGUỒN -->
+  <div class="glass-panel border border-slate-800 rounded-3xl p-5 mt-5">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+      <div>
+        <h2 class="text-sm font-black text-white flex items-center gap-2"><i class="fa-solid fa-chart-simple text-cyan-400"></i> Thống kê theo nguồn</h2>
+        <p class="text-[11px] text-slate-500 mt-0.5">Số tài khoản được gán cho mỗi nguồn đăng ký.</p>
+      </div>
+      <button onclick="SRCADMIN.copyReport()" class="px-3 py-1.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-cyan-500 to-sky-600 text-white btn-bouncy"><i class="fa-solid fa-copy mr-1"></i> Sao chép báo cáo</button>
+    </div>
+    <div id="stats-bars" class="space-y-2.5 mt-4">
+      <p class="text-[11px] text-slate-500 text-center py-4">Chưa có dữ liệu.</p>
+    </div>
+    <div class="overflow-x-auto mt-4">
+      <table class="w-full border-collapse text-xs">
+        <thead>
+          <tr class="bg-night-950 text-slate-400">
+            <th class="border border-slate-800 px-3 py-2 text-left">Nguồn</th>
+            <th class="border border-slate-800 px-3 py-2 text-right">Số tài khoản</th>
+            <th class="border border-slate-800 px-3 py-2 text-right">Tỷ lệ</th>
+          </tr>
+        </thead>
+        <tbody id="stats-table" class="text-white"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TÀI KHOẢN & GÁN NGUỒN -->
+  <div class="glass-panel border border-slate-800 rounded-3xl p-5 mt-5">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+      <div>
+        <h2 class="text-sm font-black text-white flex items-center gap-2"><i class="fa-solid fa-user-tag text-emerald-400"></i> Tài khoản &amp; gán nguồn</h2>
+        <p class="text-[11px] text-slate-500 mt-0.5">Chọn nguồn cho từng tài khoản. Tài khoản chưa gán sẽ nằm ở mục “Chưa rõ nguồn”.</p>
+      </div>
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[11px]"></i>
+        <input id="user-search" placeholder="Tìm tên / email…" class="w-[220px] bg-night-950 border border-slate-700 text-slate-100 text-xs rounded-full pl-8 pr-3 py-2 outline-none focus:border-emerald-500/70">
+      </div>
+    </div>
+    <div class="overflow-x-auto table-wrap mt-3">
+      <table class="w-full border-collapse text-xs">
+        <thead class="sticky top-0 bg-night-950 z-10">
+          <tr class="text-slate-400">
+            <th class="border border-slate-800 px-3 py-2 text-left">Tài khoản</th>
+            <th class="border border-slate-800 px-3 py-2 text-left">Vai trò</th>
+            <th class="border border-slate-800 px-3 py-2 text-left">Ngày tạo</th>
+            <th class="border border-slate-800 px-3 py-2 text-left">Nguồn đăng ký</th>
+          </tr>
+        </thead>
+        <tbody id="users-body" class="text-white"></tbody>
+      </table>
+    </div>
+    <p id="users-empty" class="text-[11px] text-slate-500 text-center py-6">Đang tải danh sách tài khoản…</p>
+  </div>
+
+  <p class="text-[10px] text-slate-600 leading-relaxed mt-4">
+    <i class="fa-solid fa-circle-info text-slate-500 mr-1"></i>
+    Trang này chỉ dành cho Admin. Danh sách nguồn lưu ở <code>config/signupSources</code>; nguồn của từng tài khoản lưu trong hồ sơ <code>users/{uid}.signupSource</code>.
+  </p>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast-stack" aria-live="polite" class="fixed bottom-5 right-4 z-[1020] space-y-2 w-[min(92vw,360px)]"></div>
+
+<script src="./firebase-config.js"></script>
+<script src="./cloud-loader.js"></script>
+<script>
+'use strict';
+window.SRCADMIN = (function () {
+  const CONFIG = window.SLEEPMATE_FB_CONFIG || null;
+  const ADMIN_EMAILS = (Array.isArray(window.SLEEPMATE_ADMIN_EMAILS) ? window.SLEEPMATE_ADMIN_EMAILS : [])
+    .map((e) => String(e).trim().toLowerCase()).filter(Boolean);
+  const SYS_NAME = window.SLEEPMATE_SYSTEM_NAME || 'Nhịp Sinh Học';
+  const CONFIGURED = !!(CONFIG && CONFIG.projectId && !/DAN_VAO_DAY|YOUR_|xxx/i.test(String(CONFIG.projectId)));
+
+  const LS_KEY = 'nsh.signupSources';
+  const PALETTE = ['#ec4899', '#8b5cf6', '#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#14b8a6', '#a855f7'];
+  const DEFAULT_SOURCES = [
+    { id: 'facebook', label: 'Facebook', color: '#3b82f6' },
+    { id: 'tiktok', label: 'TikTok', color: '#ec4899' },
+    { id: 'zalo', label: 'Zalo', color: '#06b6d4' },
+    { id: 'teacher', label: 'Giáo viên giới thiệu', color: '#8b5cf6' },
+    { id: 'friend', label: 'Bạn bè giới thiệu', color: '#10b981' },
+    { id: 'qr', label: 'QR / tờ rơi', color: '#f59e0b' },
+    { id: 'website', label: 'Website / Google', color: '#6366f1' },
+    { id: 'other', label: 'Khác', color: '#64748b' }
+  ];
+
+  let auth = null, db = null, me = null;
+  let sources = [];
+  let allUsers = [];
+  let unsubUsers = null;
+  let searchTerm = '';
+  let listenersBound = false;
+  let sourceDocReady = false;
+
+  const $id = (id) => document.getElementById(id);
+  const vn = (s) => String(s == null ? '' : s).trim();
+  const escHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+  const nowMs = () => Date.now();
+
+  function toast(title, body, kind) {
+    const stack = $id('toast-stack');
+    if (!stack) return;
+    const el = document.createElement('div');
+    el.className = 'glass-panel border rounded-2xl px-4 py-3 shadow-2xl cursor-pointer ' +
+      (kind === 'warn' ? 'border-rose-500/40' : kind === 'ok' ? 'border-emerald-500/40' : 'border-slate-700');
+    el.innerHTML = `<div class="flex items-start gap-2.5">
+      <div class="text-base leading-none mt-0.5">${kind === 'warn' ? '⚠️' : kind === 'ok' ? '✅' : '🌙'}</div>
+      <div class="min-w-0"><p class="text-[12px] font-bold text-white leading-snug">${escHtml(title)}</p>
+      <p class="text-[11px] text-slate-400 leading-snug mt-0.5">${escHtml(body)}</p></div></div>`;
+    el.addEventListener('click', () => el.remove());
+    stack.appendChild(el);
+    setTimeout(() => el.remove(), 5000);
+  }
+
+  function show(el, on) {
+    const e = typeof el === 'string' ? $id(el) : el;
+    if (e) e.classList.toggle('hidden', !on);
+  }
+
+  function showSetup(reason) {
+    const msg = $id('admin-setup-msg');
+    if (msg) {
+      msg.innerHTML = reason === 'no-sdk'
+        ? 'Không tải được thư viện Firebase. Trang quản trị cần Internet để kết nối máy chủ. Kiểm tra Wi-Fi rồi <strong class="text-slate-200">tải lại trang</strong>.'
+        : 'Chưa kết nối Firebase. Hãy dán cấu hình vào <code class="text-pink-300">firebase-config.js</code> (gồm email admin trong <code class="text-pink-300">SLEEPMATE_ADMIN_EMAILS</code>) rồi tải lại trang.';
+    }
+    show('admin-setup', true);
+    show('admin-login', false);
+    show('admin-denied', false);
+    show('admin-app', false);
+  }
+
+  function mapAuthError(e) {
+    const code = (e && e.code) || '';
+    const map = {
+      'auth/invalid-email': 'Email không hợp lệ.', 'auth/user-not-found': 'Không tìm thấy tài khoản.',
+      'auth/wrong-password': 'Mật khẩu sai.', 'auth/invalid-credential': 'Email hoặc mật khẩu không đúng.',
+      'auth/network-request-failed': 'Không có mạng.', 'auth/too-many-requests': 'Thử quá nhiều lần, chờ chút nhé.'
+    };
+    return map[code] || (e && e.message) || 'Có lỗi xảy ra.';
+  }
+
+  function fmtClock(ts) {
+    try { return new Date(ts).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' }); }
+    catch (e) { return '—'; }
+  }
+
+  /* ---------------------- nguồn: lưu trữ ---------------------- */
+  function readLocal() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function writeLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(sources)); } catch (e) { /* đầy bộ nhớ */ }
+  }
+  function normalizeSources(list) {
+    return (Array.isArray(list) ? list : []).map((s, i) => {
+      const label = vn(s && s.label);
+      if (!label) return null;
+      return {
+        id: vn(s.id) || slugify(label) || ('nguon-' + i),
+        label,
+        color: /^#[0-9a-fA-F]{6}$/.test(String(s.color || '')) ? s.color : PALETTE[i % PALETTE.length],
+        active: s.active !== false,
+        createdAt: Number(s.createdAt) || nowMs()
+      };
+    }).filter(Boolean);
+  }
+  function slugify(label) {
+    const map = { à: 'a', á: 'a', ả: 'a', ã: 'a', ạ: 'a', ă: 'a', â: 'a', đ: 'd', è: 'e', é: 'e', ẻ: 'e', ẽ: 'e', ẹ: 'e', ê: 'e', ì: 'i', í: 'i', ỉ: 'i', ĩ: 'i', ị: 'i', ò: 'o', ó: 'o', ỏ: 'o', õ: 'o', ọ: 'o', ô: 'o', ơ: 'o', ù: 'u', ú: 'u', ủ: 'u', ũ: 'u', ụ: 'u', ư: 'u', ỳ: 'y', ý: 'y', ỷ: 'y', ỹ: 'y', ỵ: 'y' };
+    return vn(label).toLowerCase()
+      .replace(/[àáảãạăâđèéẻẽẹêìíỉĩịòóỏõọôơùúủũụưỳýỷỹỵ]/g, (c) => map[c] || c)
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  }
+
+  function persistSources() {
+    writeLocal();
+    renderSources();
+    renderStats();
+    renderUsers();
+    if (db && me) {
+      db.collection('config').doc('signupSources').set({ sources, updatedAt: nowMs() }, { merge: true })
+        .catch(() => toast('Chưa lưu được lên máy chủ', 'Đã lưu cục bộ. Kiểm tra firestore.rules cho config/signupSources.', 'warn'));
+    }
+  }
+
+  function loadSources() {
+    const local = normalizeSources(readLocal());
+    sources = local.length ? local : normalizeSources(DEFAULT_SOURCES);
+    renderSources();
+    if (!db) { sourceDocReady = true; return; }
+    db.collection('config').doc('signupSources').get().then((snap) => {
+      if (snap.exists && Array.isArray(snap.data().sources) && snap.data().sources.length) {
+        sources = normalizeSources(snap.data().sources);
+        writeLocal();
+      } else {
+        // Lần đầu: đẩy danh sách hiện có (mặc định/cục bộ) lên máy chủ.
+        db.collection('config').doc('signupSources').set({ sources, updatedAt: nowMs() }, { merge: true }).catch(() => {});
+        writeLocal();
+      }
+      sourceDocReady = true;
+      renderSources(); renderStats(); renderUsers();
+    }).catch(() => {
+      sourceDocReady = true;
+      renderSources();
+      toast('Không đọc được nguồn trên máy chủ', 'Đang dùng bản lưu cục bộ. Cần cập nhật firestore.rules.', 'warn');
+    });
+  }
+
+  const sourceById = (id) => sources.find((s) => s.id === id) || null;
+
+  /* ---------------------- render: danh sách nguồn ---------------------- */
+  function countForSource(id) {
+    if (!id) return 0;
+    return allUsers.filter((u) => u.doc.signupSource === id).length;
+  }
+
+  function renderSources() {
+    const box = $id('sources-list');
+    if (!box) return;
+    if (!sources.length) {
+      box.innerHTML = '<p class="text-[11px] text-slate-500 col-span-full text-center py-4">Chưa có nguồn nào. Thêm nguồn đầu tiên ở trên.</p>';
+      return;
+    }
+    box.innerHTML = sources.slice().sort((a, b) => (b.active === true) - (a.active === true) || a.label.localeCompare(b.label, 'vi')).map((s) => {
+      const n = countForSource(s.id);
+      return `<div class="flex items-center gap-2.5 p-2.5 rounded-2xl bg-night-950 border ${s.active ? 'border-slate-800' : 'border-slate-800/50 opacity-60'}">
+        <input type="color" data-color="${escHtml(s.id)}" value="${escHtml(s.color)}" title="Đổi màu" class="w-7 h-7 shrink-0 bg-transparent border border-slate-700 rounded-lg p-0.5 cursor-pointer">
+        <div class="flex-1 min-w-0">
+          <p class="text-[12px] font-bold text-white truncate">${escHtml(s.label)}</p>
+          <p class="text-[9px] text-slate-500 truncate">${escHtml(s.id)} · ${n} tài khoản${s.active ? '' : ' · đang ẩn'}</p>
+        </div>
+        <button data-act="toggle" data-id="${escHtml(s.id)}" title="${s.active ? 'Ẩn nguồn' : 'Hiện nguồn'}" class="w-7 h-7 rounded-lg border border-slate-700 text-[10px] ${s.active ? 'text-emerald-300' : 'text-slate-500'} btn-bouncy"><i class="fa-solid ${s.active ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
+        <button data-act="rename" data-id="${escHtml(s.id)}" title="Đổi tên" class="w-7 h-7 rounded-lg border border-slate-700 text-sky-300 text-[10px] btn-bouncy"><i class="fa-solid fa-pen"></i></button>
+        <button data-act="remove" data-id="${escHtml(s.id)}" title="Xoá nguồn" class="w-7 h-7 rounded-lg border border-rose-500/40 text-rose-300 text-[10px] btn-bouncy"><i class="fa-solid fa-trash"></i></button>
+      </div>`;
+    }).join('');
+  }
+
+  /* ---------------------- render: thống kê ---------------------- */
+  function buildStats() {
+    const groups = new Map();
+    const unknownKey = '__unknown__';
+    allUsers.forEach((u) => {
+      const d = u.doc || {};
+      const sid = vn(d.signupSource);
+      const key = sid || unknownKey;
+      if (!groups.has(key)) {
+        const src = sid ? sourceById(sid) : null;
+        groups.set(key, {
+          id: sid,
+          label: sid ? (src ? src.label : (vn(d.signupSourceLabel) || sid)) : 'Chưa rõ nguồn',
+          color: src ? src.color : (sid ? '#64748b' : '#f59e0b'),
+          deleted: !!sid && !src,
+          count: 0
+        });
+      }
+      groups.get(key).count++;
+    });
+    const rows = Array.from(groups.values()).sort((a, b) => b.count - a.count);
+    const total = allUsers.length;
+    return { rows, total };
+  }
+
+  function renderStats() {
+    const { rows, total } = buildStats();
+    const assigned = allUsers.filter((u) => vn(u.doc.signupSource)).length;
+    const unknown = total - assigned;
+    const set = (id, v) => { const el = $id(id); if (el) el.textContent = String(v); };
+    set('stat-total', total);
+    set('stat-sources', sources.length);
+    set('stat-assigned', assigned);
+    set('stat-unknown', unknown);
+    const sd = $id('admin-sys-name');
+    if (sd) sd.textContent = SYS_NAME + ' · ' + new Date().getFullYear();
+
+    const bars = $id('stats-bars');
+    const table = $id('stats-table');
+    if (!total) {
+      if (bars) bars.innerHTML = '<p class="text-[11px] text-slate-500 text-center py-4">Chưa có tài khoản nào.</p>';
+      if (table) table.innerHTML = '';
+      return;
+    }
+    const max = Math.max(1, ...rows.map((r) => r.count));
+    if (bars) {
+      bars.innerHTML = rows.map((r) => {
+        const pct = total ? Math.round((r.count / total) * 100) : 0;
+        const w = Math.round((r.count / max) * 100);
+        return `<div>
+          <div class="flex items-center justify-between text-[11px] mb-1">
+            <span class="font-bold text-slate-200 truncate">${escHtml(r.label)}${r.deleted ? ' <span class="text-slate-500 font-normal">(đã xoá)</span>' : ''}</span>
+            <span class="font-mono text-slate-400 shrink-0 ml-2">${r.count} · ${pct}%</span>
+          </div>
+          <div class="h-2 rounded-full bg-night-950 border border-slate-800 overflow-hidden">
+            <div class="h-full rounded-full" style="width:${w}%;background:${escHtml(r.color)}"></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    if (table) {
+      table.innerHTML = rows.map((r) => `<tr class="border-b border-slate-800/60">
+        <td class="border border-slate-800 px-3 py-2">
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${escHtml(r.color)}"></span>
+            <span class="text-slate-200">${escHtml(r.label)}</span>${r.deleted ? '<span class="text-[9px] text-slate-500">(đã xoá)</span>' : ''}
+          </span>
+        </td>
+        <td class="border border-slate-800 px-3 py-2 text-right font-mono text-white">${r.count}</td>
+        <td class="border border-slate-800 px-3 py-2 text-right font-mono text-cyan-300">${total ? Math.round((r.count / total) * 100) : 0}%</td>
+      </tr>`).join('');
+    }
+  }
+
+  /* ---------------------- render: danh sách tài khoản ---------------------- */
+  function sourceOptions(selectedId) {
+    const opts = ['<option value="">— Chưa rõ nguồn —</option>'];
+    sources.filter((s) => s.active || s.id === selectedId).forEach((s) => {
+      opts.push(`<option value="${escHtml(s.id)}"${s.id === selectedId ? ' selected' : ''}>${escHtml(s.label)}${s.active ? '' : ' (ẩn)'}</option>`);
+    });
+    // Nguồn đã bị xoá nhưng tài khoản vẫn còn gán → vẫn hiển thị để không mất dữ liệu.
+    if (selectedId && !sourceById(selectedId)) {
+      opts.push(`<option value="${escHtml(selectedId)}" selected>${escHtml(selectedId)} (đã xoá)</option>`);
+    }
+    return opts.join('');
+  }
+
+  function renderUsers() {
+    const body = $id('users-body');
+    const empty = $id('users-empty');
+    if (!body) return;
+    const q = vn(searchTerm).toLowerCase();
+    const list = allUsers
+      .filter((u) => {
+        if (!q) return true;
+        const d = u.doc || {};
+        return String(d.name || '').toLowerCase().includes(q) || String(d.email || '').toLowerCase().includes(q);
+      })
+      .sort((a, b) => (Number(b.doc.createdAt) || 0) - (Number(a.doc.createdAt) || 0));
+
+    if (empty) empty.classList.toggle('hidden', !!allUsers.length);
+    if (!allUsers.length) {
+      body.innerHTML = '';
+      if (empty) { empty.textContent = sourceDocReady ? 'Chưa có tài khoản nào đăng ký.' : 'Đang tải danh sách tài khoản…'; empty.classList.remove('hidden'); }
+      return;
+    }
+    if (!list.length) {
+      body.innerHTML = '<tr><td colspan="4" class="border border-slate-800 px-3 py-6 text-center text-[11px] text-slate-500">Không tìm thấy tài khoản khớp từ khoá.</td></tr>';
+      if (empty) empty.classList.add('hidden');
+      return;
+    }
+    body.innerHTML = list.map((u) => {
+      const d = u.doc || {};
+      const name = vn(d.name) || 'Thành viên';
+      const email = vn(d.email) || (d.uid ? d.uid.slice(0, 12) : '');
+      const role = d.role === 'admin' ? 'admin' : 'member';
+      const roleChip = role === 'admin'
+        ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30">admin</span>'
+        : '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-700/30 text-slate-300 border border-slate-700">member</span>';
+      const createdAt = Number(d.createdAt) ? fmtClock(Number(d.createdAt)) : '—';
+      return `<tr class="border-b border-slate-800/60 hover:bg-night-850/50">
+        <td class="border border-slate-800 px-3 py-2">
+          <p class="font-bold text-slate-100 truncate max-w-[220px]">${escHtml(name)}</p>
+          <p class="text-[10px] text-slate-500 truncate max-w-[220px]">${escHtml(email)}</p>
+        </td>
+        <td class="border border-slate-800 px-3 py-2">${roleChip}</td>
+        <td class="border border-slate-800 px-3 py-2 text-[11px] text-slate-400 font-mono">${escHtml(createdAt)}</td>
+        <td class="border border-slate-800 px-3 py-2">
+          <select data-uid="${escHtml(u.id)}" class="w-full min-w-[160px] bg-night-950 border border-slate-700 text-slate-100 text-[11px] rounded-lg px-2 py-1.5 outline-none focus:border-emerald-500/70">
+            ${sourceOptions(vn(d.signupSource))}
+          </select>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ---------------------- hành động nguồn ---------------------- */
+  function add() {
+    const labelEl = $id('src-label');
+    const colorEl = $id('src-color');
+    const label = vn(labelEl && labelEl.value);
+    if (!label) { toast('Thiếu tên nguồn', 'Nhập tên nguồn trước khi thêm.', 'warn'); return; }
+    if (sources.some((s) => s.label.toLowerCase() === label.toLowerCase())) {
+      toast('Nguồn đã tồn tại', 'Tên nguồn này đã có trong danh sách.', 'warn'); return;
+    }
+    let id = slugify(label) || ('nguon-' + nowMs().toString(36));
+    if (sources.some((s) => s.id === id)) id += '-' + nowMs().toString(36).slice(-4);
+    const color = /^#[0-9a-fA-F]{6}$/.test(String(colorEl && colorEl.value)) ? colorEl.value : PALETTE[sources.length % PALETTE.length];
+    sources.push({ id, label, color, active: true, createdAt: nowMs() });
+    if (labelEl) labelEl.value = '';
+    persistSources();
+    toast('Đã thêm nguồn', label + ' đã có trong danh sách.', 'ok');
+  }
+
+  function rename(id) {
+    const s = sourceById(id);
+    if (!s) return;
+    const next = window.prompt('Tên mới cho nguồn:', s.label);
+    if (next === null) return;
+    const label = vn(next);
+    if (!label) { toast('Tên trống', 'Tên nguồn không được để trống.', 'warn'); return; }
+    if (sources.some((x) => x.id !== id && x.label.toLowerCase() === label.toLowerCase())) {
+      toast('Trùng tên', 'Đã có nguồn khác cùng tên.', 'warn'); return;
+    }
+    s.label = label;
+    persistSources();
+    if (db && me) {
+      // Cập nhật nhãn đã lưu trong hồ sơ người dùng cho khớp.
+      const affected = allUsers.filter((u) => u.doc.signupSource === id);
+      affected.forEach((u) => {
+        db.collection('users').doc(u.id).update({ signupSourceLabel: label }).catch(() => {});
+      });
+    }
+    toast('Đã đổi tên', label, 'ok');
+  }
+
+  function remove(id) {
+    const s = sourceById(id);
+    if (!s) return;
+    const n = countForSource(id);
+    const msg = n
+      ? `Xoá nguồn “${s.label}” đang gán cho ${n} tài khoản? Các tài khoản này vẫn giữ nhãn cũ và sẽ hiện “(đã xoá)”.`
+      : `Xoá nguồn “${s.label}”?`;
+    if (!window.confirm(msg)) return;
+    sources = sources.filter((x) => x.id !== id);
+    persistSources();
+    toast('Đã xoá nguồn', s.label, 'ok');
+  }
+
+  function toggle(id) {
+    const s = sourceById(id);
+    if (!s) return;
+    s.active = !s.active;
+    persistSources();
+  }
+
+  function setColor(id, color) {
+    const s = sourceById(id);
+    if (!s || !/^#[0-9a-fA-F]{6}$/.test(String(color))) return;
+    s.color = color;
+    persistSources();
+  }
+
+  function seed() {
+    const existing = new Set(sources.map((s) => s.label.toLowerCase()));
+    let added = 0;
+    normalizeSources(DEFAULT_SOURCES).forEach((d) => {
+      if (!existing.has(d.label.toLowerCase()) && !sources.some((s) => s.id === d.id)) {
+        sources.push({ ...d, createdAt: nowMs() });
+        added++;
+      }
+    });
+    if (!added) { toast('Đã đủ gợi ý', 'Các nguồn mặc định đã có trong danh sách.', 'info'); return; }
+    persistSources();
+    toast('Đã nạp gợi ý', `Thêm ${added} nguồn phổ biến.`, 'ok');
+  }
+
+  function assign(uid, sourceId) {
+    if (!db) return;
+    const s = sourceId ? sourceById(sourceId) : null;
+    const payload = {
+      signupSource: sourceId || '',
+      signupSourceLabel: s ? s.label : '',
+      signupSourceAt: sourceId ? nowMs() : 0
+    };
+    db.collection('users').doc(uid).update(payload).then(() => {
+      const entry = allUsers.find((u) => u.id === uid);
+      if (entry) Object.assign(entry.doc, payload);
+      renderStats();
+      renderUsers();
+      toast('Đã gán nguồn', (s ? s.label : 'Chưa rõ nguồn') + '.', 'ok');
+    }).catch(() => toast('Không gán được', 'Kiểm tra quyền Admin trong firestore.rules.', 'warn'));
+  }
+
+  function copyReport() {
+    const { rows, total } = buildStats();
+    const assigned = allUsers.filter((u) => vn(u.doc.signupSource)).length;
+    const lines = [
+      `BÁO CÁO NGUỒN ĐĂNG KÝ — ${SYS_NAME}`,
+      `Thời điểm: ${new Date().toLocaleString('vi-VN')}`,
+      `Tổng tài khoản: ${total}`,
+      `Đã gán nguồn: ${assigned} · Chưa rõ: ${total - assigned}`,
+      'Theo nguồn:'
+    ];
+    if (!rows.length) lines.push('  (chưa có dữ liệu)');
+    rows.forEach((r) => {
+      const pct = total ? Math.round((r.count / total) * 100) : 0;
+      lines.push(`  - ${r.label}${r.deleted ? ' (đã xoá)' : ''}: ${r.count} (${pct}%)`);
+    });
+    const text = lines.join('\n');
+    const done = () => toast('Đã sao chép', 'Dán vào báo cáo là xong.', 'ok');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else fallbackCopy(text, done);
+  }
+
+  function fallbackCopy(text, done) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done();
+    } catch (e) { toast('Không sao chép được', 'Trình duyệt chặn clipboard — bấm Ctrl+C sau khi chọn.', 'warn'); }
+  }
+
+  /* ---------------------- đăng ký lắng nghe ---------------------- */
+  function subscribe() {
+    stop();
+    unsubUsers = db.collection('users').limit(1000).onSnapshot(
+      (snap) => {
+        allUsers = [];
+        snap.forEach((d) => allUsers.push({ id: d.id, doc: d.data() || {} }));
+        renderStats(); renderUsers(); renderSources();
+      },
+      () => toast('Lỗi dữ liệu', 'Không đọc được danh sách người dùng — kiểm tra Firestore rules.', 'warn')
+    );
+  }
+
+  function stop() {
+    if (unsubUsers) { try { unsubUsers(); } catch (e) {} unsubUsers = null; }
+  }
+
+  /* ---------------------- khởi tạo ---------------------- */
+  function bindListeners() {
+    if (listenersBound) return;
+    listenersBound = true;
+
+    const list = $id('sources-list');
+    if (list) {
+      list.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-act]');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        const act = btn.getAttribute('data-act');
+        if (act === 'rename') rename(id);
+        else if (act === 'remove') remove(id);
+        else if (act === 'toggle') toggle(id);
+      });
+      list.addEventListener('change', (e) => {
+        const inp = e.target.closest('input[data-color]');
+        if (!inp) return;
+        setColor(inp.getAttribute('data-color'), inp.value);
+      });
+    }
+
+    const usersBody = $id('users-body');
+    if (usersBody) {
+      usersBody.addEventListener('change', (e) => {
+        const sel = e.target.closest('select[data-uid]');
+        if (!sel) return;
+        assign(sel.getAttribute('data-uid'), sel.value);
+      });
+    }
+
+    const search = $id('user-search');
+    if (search) search.addEventListener('input', () => { searchTerm = search.value || ''; renderUsers(); });
+  }
+
+  function closeAll() {
+    show('admin-setup', false); show('admin-login', false); show('admin-denied', false);
+    stop(); show('admin-app', false);
+  }
+
+  function init() {
+    bindListeners();
+    const sd = $id('admin-sys-name');
+    if (sd) sd.textContent = SYS_NAME + ' · ' + new Date().getFullYear();
+
+    if (!CONFIGURED) { showSetup('missing-config'); return; }
+    if (!window.firebase) { showSetup('no-sdk'); return; }
+
+    try {
+      if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(CONFIG);
+      auth = firebase.auth();
+      db = firebase.firestore();
+    } catch (e) {
+      showSetup('no-sdk');
+      return;
+    }
+
+    auth.onAuthStateChanged(async (u) => {
+      if (!u) {
+        me = null;
+        stop();
+        show('admin-setup', false); show('admin-denied', false); show('admin-app', false); show('admin-login', true);
+        return;
+      }
+      let role = '';
+      try {
+        const snap = await db.collection('users').doc(u.uid).get();
+        if (snap.exists && snap.data().role) role = snap.data().role;
+      } catch (e) { role = ''; }
+      const email = (u.email || '').toLowerCase();
+      const allowed = ADMIN_EMAILS.includes(email) || role === 'admin';
+      if (!allowed) {
+        stop();
+        $id('denied-email').textContent = u.email || '';
+        show('admin-denied', true); show('admin-login', false); show('admin-setup', false); show('admin-app', false);
+        return;
+      }
+      me = { uid: u.uid, email: u.email || '' };
+      $id('admin-who').textContent = me.email;
+      closeAll();
+      show('admin-app', true);
+      loadSources();
+      subscribe();
+    });
+  }
+
+  function login() {
+    if (!auth) return;
+    const email = vn($id('admin-email').value), pass = $id('admin-pass').value || '';
+    const err = $id('admin-login-error');
+    if (!email || !pass) { err.textContent = 'Nhập đủ email và mật khẩu.'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    auth.signInWithEmailAndPassword(email, pass).catch((e) => {
+      err.textContent = mapAuthError(e); err.classList.remove('hidden');
+    });
+  }
+
+  function signOut() {
+    if (auth) auth.signOut().catch(() => {});
+    stop();
+    me = null;
+    allUsers = [];
+    closeAll();
+    show('admin-login', true);
+  }
+
+  /* Chế độ cục bộ: xem/quản lý danh sách nguồn ngay cả khi chưa có Firebase.
+     Không có danh sách tài khoản (vì tài khoản nằm trên máy chủ). */
+  function demo() {
+    me = { uid: '', email: '', local: true };
+    allUsers = [];
+    sourceDocReady = true;
+    const who = $id('admin-who');
+    if (who) who.textContent = 'chế độ cục bộ';
+    closeAll();
+    show('admin-app', true);
+    loadSources();
+    renderStats();
+    renderUsers();
+    toast('Chế độ cục bộ', 'Bạn đang quản lý danh sách nguồn trên máy này. Dữ liệu không gửi lên máy chủ.', 'info');
+  }
+
+  function refresh() {
+    if (me && !db) { loadSources(); toast('Đã làm mới', 'Tải lại danh sách nguồn cục bộ.', 'info'); return; }
+    if (db && me) { loadSources(); subscribe(); toast('Đang làm mới', 'Đồng bộ lại nguồn và tài khoản…', 'info'); }
+    else toast('Chưa đăng nhập', 'Hãy đăng nhập bằng tài khoản Admin.', 'warn');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+
+  return { init, login, signOut, refresh, demo, add, rename, remove, toggle, setColor, seed, copyReport,
+    __sources: () => sources, __users: () => allUsers };
+})();
+</script>
+</body>
+</html>
