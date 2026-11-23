@@ -19,5 +19,33 @@ body { background-image: radial-gradient(ellipse at 20% 0%, #29204866, transpare
 .nsh-note { border-left: 3px solid #a78bfa; padding: 10px 16px; margin: 20px 0; background: #a78bfa09; }
 .nsh-card label { display: block; font-size: 13px; color: #bcb4d3; margin-bottom: 7px; }
 .nsh-card input { background: #060914; border: 1px solid #ffffff22; border-radius: 12px; padding: 10px; color: white; width: 100%; }
+.nsh-card input:focus, .nsh-card select:focus { outline: none; border-color: #b6a1ff88; }
+.nsh-card select { background: #060914; border: 1px solid #ffffff22; border-radius: 12px; padding: 10px; color: white; width: 100%; }
+
+/* --- Đăng ký tài khoản trên trang chủ --- */
+.nsh-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.nsh-form-grid .nsh-col-2 { grid-column: span 2; }
+.nsh-tiny { font-size: 11px; line-height: 1.65; color: #8b93ab; }
+.nsh-alert { border-radius: 12px; padding: 9px 12px; font-size: 12px; margin: 10px 0; }
+.nsh-alert.err { background: #f43f5e1a; border: 1px solid #f43f5e4d; color: #fda4af; }
+.nsh-alert.ok { background: #10b9811a; border: 1px solid #10b9814d; color: #6ee7b7; }
+.nsh-plan-pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 4px 0 2px; }
+.nsh-plan-opt { display: block; width: 100%; text-align: left; padding: 10px 12px; border-radius: 12px; border: 1px solid #ffffff1f; background: #060914; color: #cfc9e4; font-size: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+.nsh-plan-opt b { display: block; font-size: 12.5px; color: #fff; }
+.nsh-plan-opt span { font-size: 11px; color: #928dab; }
+.nsh-plan-opt[aria-pressed="true"] { border-color: #b6a1ff; background: #b6a1ff14; }
+.nsh-rows { display: flex; flex-direction: column; }
+.nsh-plan-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px dashed #ffffff14; }
+.nsh-plan-row:last-child { border-bottom: 0; }
+.nsh-plan-row b { font-size: 12.5px; color: #e6e2f5; display: block; }
+.nsh-plan-row small { font-size: 11px; color: #8f97ae; }
+.nsh-plan-row .nsh-pick { font-size: 11px; font-weight: 700; padding: 6px 11px; border-radius: 9px; border: 1px solid #b6a1ff55; color: #cfc2ff; background: #b6a1ff12; cursor: pointer; white-space: nowrap; }
+.nsh-plan-row .nsh-pick[data-active="1"] { background: #b6a1ff; color: #171126; border-color: #b6a1ff; }
+.nsh-acc-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.nsh-avatar { width: 42px; height: 42px; border-radius: 999px; background: linear-gradient(135deg, #b6a1ff, #6d8cff); color: #14101f; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 16px; flex: 0 0 auto; }
+.nsh-kv { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; padding: 7px 0; border-bottom: 1px dashed #ffffff14; }
+.nsh-kv span { color: #8f97ae; }
+.nsh-kv b { color: #e6e2f5; font-weight: 600; text-align: right; word-break: break-word; }
+@media(max-width:700px) { .nsh-form-grid, .nsh-plan-pick { grid-template-columns: 1fr; } .nsh-form-grid .nsh-col-2 { grid-column: auto; } }
 #tab-btn-home { color: #c4b5fd; padding: 10px 16px; border-radius: 16px; font-size: 12px; font-weight: 700; }
 @media(max-width:700px) { .nsh-grid { grid-template-columns: 1fr; } .nsh-wide { grid-column: auto; } .nsh-hero { padding: 25px; } }

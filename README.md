@@ -14,6 +14,16 @@ Dữ liệu lưu cục bộ trên máy người dùng (localStorage với tiền
 - Thống kê đêm, nhật ký, thẻ kiến thức, thở 4-7-8, âm thanh sóng não.
 - Trợ lý quy tắc offline; tuỳ chọn nối AI online.
 - PWA: cài vào màn hình chính, chạy offline.
+- **Đăng ký tài khoản và chọn gói ngay trên trang chủ** (xem bên dưới).
+
+## Đăng ký tài khoản trên trang chủ
+
+Form nằm ngay dưới phần giới thiệu: họ tên, email, điện thoại, lớp/trường, mật khẩu và 4 lựa chọn gói. Bảng "Các gói đang áp dụng" cho chọn nhanh.
+
+- **Có mạng / đã cấu hình Firebase** (`firebase-config.js`): tài khoản được tạo thật bằng Firebase Auth; hồ sơ gồm `name`, `phone`, `className`, `plan`, `planLabel`, `signupAt`, `app` được ghi vào `users/{uid}` để trang `admin.html` đọc được.
+- **Mất mạng / chưa có SDK**: app tự lưu tài khoản cục bộ (mật khẩu băm SHA-256 + salt), vẫn đăng nhập được bình thường.
+- Chọn gói trên trang chủ hoặc trong tab "Gói & Phí" đều cập nhật cùng một hồ sơ; quyền lợi áp dụng ngay.
+- Trang chủ luôn mở, không bị lớp phủ đăng nhập chặn.
 
 ## Tab "Gói & Phí"
 

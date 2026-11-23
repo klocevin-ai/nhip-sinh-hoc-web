@@ -20,12 +20,84 @@
       </article>
       <article class="nsh-card"><h2>Góc nhỏ của bạn</h2><label for="nsh-name">Bạn muốn được gọi là gì?</label><input id="nsh-name" maxlength="40" placeholder="Tên của bạn" autocomplete="nickname"><button class="nsh-btn secondary" id="nsh-save-name" style="margin-top:12px">Lưu tên</button><p id="nsh-greeting" class="nsh-muted" style="margin-top:12px" role="status"></p></article>
     </div>
+
+    <!-- ĐĂNG KÝ TÀI KHOẢN + GÓI NGAY TRÊN TRANG CHỦ -->
+    <div class="nsh-grid" id="nsh-signup-section">
+      <article class="nsh-card nsh-wide" id="nsh-signup-card">
+        <p class="nsh-kicker">TÀI KHOẢN CỦA BẠN</p>
+        <h2>Đăng ký để lưu tiến trình & chọn gói</h2>
+        <p class="nsh-muted">Tạo tài khoản bằng email và mật khẩu, điền lớp/trường rồi chọn gói ngay dưới đây. Có mạng → hồ sơ lưu trên máy chủ để Admin quản lý; mất mạng → vẫn dùng được trên thiết bị. Không tự thu phí.</p>
+        <div id="nsh-reg-error" class="nsh-alert err hidden" role="alert"></div>
+        <div class="nsh-form-grid" style="margin-top:14px">
+          <div class="nsh-col-2"><label for="nsh-reg-name">Họ và tên *</label><input id="nsh-reg-name" maxlength="60" placeholder="Nguyễn Văn A" autocomplete="name"></div>
+          <div><label for="nsh-reg-email">Email *</label><input id="nsh-reg-email" type="email" maxlength="100" placeholder="ten@email.com" autocomplete="email"></div>
+          <div><label for="nsh-reg-phone">Số điện thoại</label><input id="nsh-reg-phone" type="tel" maxlength="15" placeholder="0941144975" autocomplete="tel"></div>
+          <div><label for="nsh-reg-class">Lớp / trường</label><input id="nsh-reg-class" maxlength="80" placeholder="10/3 — THPT Nguyễn Đình Chiểu"></div>
+          <div><label for="nsh-reg-pass">Mật khẩu * (tối thiểu 6 ký tự)</label><input id="nsh-reg-pass" type="password" maxlength="80" placeholder="••••••" autocomplete="new-password"></div>
+          <div><label for="nsh-reg-pass2">Nhập lại mật khẩu *</label><input id="nsh-reg-pass2" type="password" maxlength="80" placeholder="••••••" autocomplete="new-password"></div>
+          <div class="nsh-col-2">
+            <label>Gói đăng ký</label>
+            <div class="nsh-plan-pick" id="nsh-reg-plan">
+              <button type="button" class="nsh-plan-opt" data-plan="free" aria-pressed="true"><b>Học sinh</b><span>Miễn phí</span></button>
+              <button type="button" class="nsh-plan-opt" data-plan="thuong" aria-pressed="false"><b>Gói Thường</b><span>29.000đ/tháng · 129.000đ/năm</span></button>
+              <button type="button" class="nsh-plan-opt" data-plan="nghiem-tuc" aria-pressed="false"><b>Gói Nghiêm túc</b><span>79.000đ/tháng · 379.000đ/năm</span></button>
+              <button type="button" class="nsh-plan-opt" data-plan="truong" aria-pressed="false"><b>Gói Trường</b><span>5.000.000đ/năm</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="nsh-actions">
+          <button class="nsh-btn" id="nsh-reg-submit" style="color:#fff;background:linear-gradient(120deg,#8b5cf6,#4f46e5)">Tạo tài khoản</button>
+          <button class="nsh-btn secondary" id="nsh-show-login">Đã có tài khoản? Đăng nhập</button>
+        </div>
+        <p class="nsh-tiny" style="margin-top:12px">Mật khẩu do Firebase xác thực (hoặc được mã hoá khi lưu tạm trên thiết bị). Chọn gói không tự trừ tiền, không tự gia hạn.</p>
+
+        <div id="nsh-login-box" class="hidden" style="margin-top:18px;padding-top:16px;border-top:1px solid #ffffff18">
+          <h2>Đăng nhập</h2>
+          <div id="nsh-login-error" class="nsh-alert err hidden" role="alert"></div>
+          <div class="nsh-form-grid" style="margin-top:10px">
+            <div><label for="nsh-login-email">Email</label><input id="nsh-login-email" type="email" autocomplete="email"></div>
+            <div><label for="nsh-login-pass">Mật khẩu</label><input id="nsh-login-pass" type="password" autocomplete="current-password"></div>
+          </div>
+          <div class="nsh-actions"><button class="nsh-btn" id="nsh-login-submit">Đăng nhập</button><button class="nsh-btn secondary" id="nsh-show-register">Quay lại đăng ký</button></div>
+        </div>
+      </article>
+
+      <article class="nsh-card nsh-wide hidden" id="nsh-account-card">
+        <p class="nsh-kicker">ĐÃ ĐĂNG NHẬP</p>
+        <div class="nsh-acc-head">
+          <div class="nsh-avatar" id="nsh-acc-avatar">N</div>
+          <div><h2 id="nsh-acc-name" style="margin:0">—</h2><p class="nsh-tiny" id="nsh-acc-email" style="margin:2px 0 0">—</p></div>
+        </div>
+        <div class="nsh-kv"><span>Gói hiện tại</span><b id="nsh-acc-plan">—</b></div>
+        <div class="nsh-kv"><span>Số điện thoại</span><b id="nsh-acc-phone">—</b></div>
+        <div class="nsh-kv"><span>Lớp / trường</span><b id="nsh-acc-class">—</b></div>
+        <div class="nsh-kv"><span>Ngày đăng ký</span><b id="nsh-acc-since">—</b></div>
+        <div class="nsh-actions">
+          <button class="nsh-btn secondary" onclick="switchTab('plans')">Xem chi tiết gói & dùng thử →</button>
+          <button class="nsh-btn secondary" id="nsh-logout">Đăng xuất</button>
+        </div>
+      </article>
+
+      <article class="nsh-card nsh-wide">
+        <p class="nsh-kicker">BẢNG GÓI</p>
+        <h2>Các gói đang áp dụng</h2>
+        <p class="nsh-muted">Chọn nhanh ở đây, hoặc mở tab <b>Gói &amp; Phí</b> để dùng thử 3 ngày và tính chi phí. Chọn gói không tự trừ tiền.</p>
+        <div class="nsh-rows" id="nsh-home-plans">
+          <div class="nsh-plan-row"><div><b>Học sinh</b><small>Miễn phí — đầy đủ tính năng cốt lõi</small></div><button class="nsh-pick" data-pick="free">Chọn</button></div>
+          <div class="nsh-plan-row"><div><b>Gói Thường</b><small>29.000đ/tháng · 129.000đ/năm — thêm báo cáo tuần</small></div><button class="nsh-pick" data-pick="thuong">Chọn</button></div>
+          <div class="nsh-plan-row"><div><b>Gói Nghiêm túc</b><small>79.000đ/tháng · 379.000đ/năm — thêm AI online & xuất dữ liệu</small></div><button class="nsh-pick" data-pick="nghiem-tuc">Chọn</button></div>
+          <div class="nsh-plan-row"><div><b>Gói Trường</b><small>5.000.000đ/năm — quản lý cả lớp</small></div><button class="nsh-pick" data-pick="truong">Chọn</button></div>
+        </div>
+        <p class="nsh-tiny" style="margin-top:12px">Đặt mua thật: gọi/Zalo <b>094 114 4975</b> · klocevin@gmail.com</p>
+      </article>
+    </div>
+
     <div class="nsh-grid">
       <article class="nsh-card"><h2>01 / Nhìn lại thói quen</h2><p class="nsh-muted">9 câu tự đánh giá, nhật ký 11 lý do chưa ngủ và 10 thẻ kiến thức.</p><div class="nsh-actions"><button class="nsh-btn secondary" onclick="switchTab('bedtime')">Khám phá →</button></div></article>
       <article class="nsh-card"><h2>02 / Thả lỏng tâm trí</h2><p class="nsh-muted">Viết ra điều còn vướng bận hoặc dành vài phút thực hành thở 4-7-8.</p><div class="nsh-actions"><button class="nsh-btn secondary" onclick="switchTab('journal')">Viết nhật ký</button><button class="nsh-btn secondary" onclick="switchTab('breath-lab')">Tập thở</button></div></article>
       <article class="nsh-card"><h2>03 / Xem tiến trình</h2><p class="nsh-muted">Thống kê từng đêm, lịch sử gần đây và báo cáo tuần từ dữ liệu của bạn.</p><div class="nsh-actions"><button class="nsh-btn secondary" onclick="switchTab('stats')">Xem thống kê →</button></div></article>
     </div>
-    <div class="nsh-note nsh-muted"><b>Riêng tư ngay từ đầu.</b> Bản này hiện lưu dữ liệu trên thiết bị, không kết nối Firebase của SleepMate cũ. Tài khoản, đồng bộ nhóm và bảng điều khiển giáo viên chỉ hoạt động sau khi cấu hình máy chủ riêng. Không đo giấc ngủ sinh lý, không chẩn đoán hay điều trị mất ngủ.</div>
+    <div class="nsh-note nsh-muted"><b>Riêng tư ngay từ đầu.</b> Tài khoản đăng ký trên trang chủ được lưu qua Firebase (khi có mạng); khi mất mạng app vẫn chạy với dữ liệu lưu cục bộ. Không đo giấc ngủ sinh lý, không chẩn đoán hay điều trị mất ngủ.</div>
     <article class="nsh-card"><h2>Về dự án & hướng phát triển</h2><p class="nsh-muted">Huỳnh Phúc Khánh Lộc · Lớp 10/3 · Trường THPT Nguyễn Đình Chiểu.<br>Nhịp Sinh Học được xây dựng theo nội dung bài dự thi khởi nghiệp 2026.</p><details style="margin-top:15px"><summary class="nsh-muted" style="cursor:pointer">Gói dịch vụ & dùng thử</summary><p class="nsh-muted">Học sinh: miễn phí. Gói Thường: 29.000đ/tháng hoặc 129.000đ/năm. Gói Nghiêm túc: 79.000đ/tháng hoặc 379.000đ/năm. Gói Trường: 5.000.000đ/năm. Mở tab <b>Gói & Phí</b> để dùng thử 3 ngày và dùng máy tính chi phí. Đây là mô phỏng theo báo cáo — chưa kết nối cổng thanh toán, không tự thu tiền.</p></details><p class="nsh-muted" style="margin-top:14px">Thí điểm 8 tuần: đo ban đầu → nhắc theo cấp → đồng hành theo nhóm → đánh giá lại. Giảm 30% thời gian dùng máy sau 22:30 là mục tiêu, chưa phải kết quả đã đạt.</p></article>
   `;
   const name = document.getElementById('nsh-name');
@@ -44,6 +116,7 @@
   };
   document.addEventListener('DOMContentLoaded', () => { refresh(); switchTab('home'); });
   document.getElementById('tab-btn-home').addEventListener('click', refresh);
+  window.NSH_HOME_REFRESH = refresh;
 })();
 
 /* =====================================================================
@@ -115,6 +188,7 @@
     S.plan.since = Date.now();
     save(true);
     render();
+    if (window.NSH_ACCOUNT && typeof NSH_ACCOUNT.syncPlan === 'function') NSH_ACCOUNT.syncPlan(plan);
     showToast('Đã chọn gói', `${PLAN_LABEL[plan]} đã được áp dụng trên thiết bị này.`, 'ok');
   }
 
@@ -375,4 +449,341 @@
   window.NSH_PLAN = { choose, startTrial, cancelTrial, calc, proj, exportWeeklyReport, exportDetailedData, render };
 
   document.addEventListener('DOMContentLoaded', () => { render(); setInterval(tick, 1000); });
+})();
+
+/* =====================================================================
+   Đăng ký / đăng nhập tài khoản + chọn gói ngay trên trang chủ
+   - Tài khoản lưu cục bộ (localStorage), mật khẩu băm SHA-256 + salt.
+   - Không gửi dữ liệu đi đâu; không tự thu tiền.
+   ===================================================================== */
+(() => {
+  'use strict';
+
+  const ACC_KEY = 'nhip-sinh-hoc.accounts';
+  const SESSION_KEY = 'nhip-sinh-hoc.session';
+  const PLAN_KEYS = ['free', 'thuong', 'nghiem-tuc', 'truong'];
+  const PLAN_NAME = { free: 'Học sinh · Miễn phí', thuong: 'Gói Thường', 'nghiem-tuc': 'Gói Nghiêm túc', truong: 'Gói Trường' };
+  const $ = (id) => document.getElementById(id);
+  const vn = (s) => String(s == null ? '' : s).trim();
+
+  let pickedPlan = 'free';
+
+  /* ---------------- lưu trữ ---------------- */
+  function readAccounts() {
+    try {
+      const raw = localStorage.getItem(ACC_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (_) { return []; }
+  }
+  function writeAccounts(arr) {
+    try { localStorage.setItem(ACC_KEY, JSON.stringify(arr.slice(0, 50))); return true; }
+    catch (_) { return false; }
+  }
+  function sessionEmail() {
+    try { return localStorage.getItem(SESSION_KEY) || ''; } catch (_) { return ''; }
+  }
+  function setSession(email) {
+    try { email ? localStorage.setItem(SESSION_KEY, email) : localStorage.removeItem(SESSION_KEY); } catch (_) {}
+  }
+  function currentAccount() {
+    const email = sessionEmail();
+    if (!email) return null;
+    return readAccounts().find((a) => a.email === email) || null;
+  }
+
+  /* ---------------- băm mật khẩu ---------------- */
+  function randSalt() {
+    const b = new Uint8Array(12);
+    (window.crypto || {}).getRandomValues ? crypto.getRandomValues(b) : b.forEach((_, i) => { b[i] = (Math.random() * 256) | 0; });
+    return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('');
+  }
+  function fallbackHash(s) {           // chỉ dùng khi không có crypto.subtle
+    let h1 = 0x811c9dc5, h2 = 0x1000193;
+    for (let i = 0; i < s.length; i++) {
+      h1 = (h1 ^ s.charCodeAt(i)) * 16777619 >>> 0;
+      h2 = (h2 + s.charCodeAt(i) * (i + 7)) >>> 0;
+    }
+    return 'fb' + h1.toString(16) + h2.toString(16);
+  }
+  async function hashPass(pass, salt) {
+    const text = salt + '::' + pass;
+    try {
+      if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+        return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+      }
+    } catch (_) { /* rơi xuống hàm dự phòng */ }
+    return fallbackHash(text);
+  }
+
+  /* ---------------- thông báo ---------------- */
+  function showErr(id, msg) {
+    const el = $(id);
+    if (!el) return;
+    if (msg) { el.textContent = msg; el.classList.remove('hidden'); }
+    else { el.textContent = ''; el.classList.add('hidden'); }
+  }
+  function toast(t, b, k) {
+    if (typeof window.showToast === 'function') window.showToast(t, b, k);
+  }
+
+  /* ---------------- áp dụng gói ---------------- */
+  function applyPlan(key, opts) {
+    if (typeof S === 'undefined' || !S) return;
+    const plan = PLAN_KEYS.includes(key) ? key : 'free';
+    S.plan = S.plan || {};
+    const changed = S.plan.key !== plan;
+    S.plan.key = plan;
+    if (changed || !S.plan.since) S.plan.since = Date.now();
+    if (!opts || opts.clearTrial !== false) { S.plan.trialStart = 0; S.plan.trialEnd = 0; S.plan.trialPlan = ''; }
+    if (typeof save === 'function') save(true);
+    render();
+    if (window.NSH_PLAN && typeof NSH_PLAN.render === 'function') NSH_PLAN.render();
+    if (typeof window.NSH_HOME_REFRESH === 'function') window.NSH_HOME_REFRESH();
+  }
+
+  /* ---------------- giao diện ---------------- */
+  function markPlanButtons() {
+    const logged = !!currentAccount();
+    let activeKey = pickedPlan;
+    if (typeof S !== 'undefined' && S && S.plan && S.plan.trialEnd && Date.now() < S.plan.trialEnd) activeKey = S.plan.trialPlan || activeKey;
+    else if (logged && typeof S !== 'undefined' && S) activeKey = S.plan && S.plan.key ? S.plan.key : activeKey;
+    document.querySelectorAll('#nsh-reg-plan .nsh-plan-opt').forEach((b) => {
+      b.setAttribute('aria-pressed', b.dataset.plan === pickedPlan ? 'true' : 'false');
+    });
+    document.querySelectorAll('#nsh-home-plans .nsh-pick').forEach((b) => {
+      const active = logged && b.dataset.pick === activeKey;
+      b.setAttribute('data-active', active ? '1' : '0');
+      b.textContent = active ? 'Đang dùng' : 'Chọn';
+    });
+  }
+
+  function render() {
+    const acc = currentAccount();
+    const signCard = $('nsh-signup-card');
+    const accCard = $('nsh-account-card');
+    if (signCard) signCard.classList.toggle('hidden', !!acc);
+    if (accCard) accCard.classList.toggle('hidden', !acc);
+
+    if (acc) {
+      pickedPlan = acc.plan || 'free';
+      const initial = (acc.name || 'N').trim().charAt(0).toUpperCase();
+      if ($('nsh-acc-avatar')) $('nsh-acc-avatar').textContent = initial;
+      if ($('nsh-acc-name')) $('nsh-acc-name').textContent = acc.name || 'Thành viên';
+      if ($('nsh-acc-email')) $('nsh-acc-email').textContent = acc.email;
+      let eff = acc.plan || 'free';
+      let isTrial = false;
+      if (typeof S !== 'undefined' && S && S.plan && S.plan.trialEnd && Date.now() < S.plan.trialEnd) {
+        eff = S.plan.trialPlan || eff;
+        isTrial = true;
+      } else if (typeof S !== 'undefined' && S && S.plan && S.plan.key) {
+        eff = S.plan.key;
+      }
+      if ($('nsh-acc-plan')) $('nsh-acc-plan').textContent = PLAN_NAME[eff] + (isTrial ? ' · đang dùng thử' : '');
+      if ($('nsh-acc-phone')) $('nsh-acc-phone').textContent = acc.phone || '—';
+      if ($('nsh-acc-class')) $('nsh-acc-class').textContent = acc.className || '—';
+      if ($('nsh-acc-since')) $('nsh-acc-since').textContent = acc.createdAt ? new Date(acc.createdAt).toLocaleDateString('vi-VN') : '—';
+    }
+    markPlanButtons();
+  }
+
+  /* Gọi khi đổi gói ở tab "Gói & Phí" để trang chủ đồng bộ. */
+  function cloudSavePlan(key) {
+    const acc = currentAccount();
+    const sm = window.SM_ACCT || {};
+    if (acc && acc.cloud && typeof sm.firebaseReady === 'function' && sm.firebaseReady() && typeof sm.saveProfile === 'function') {
+      sm.saveProfile({ plan: key, planLabel: PLAN_NAME[key], planSince: Date.now() });
+    }
+  }
+  function syncPlan(key) {
+    pickedPlan = PLAN_KEYS.includes(key) ? key : 'free';
+    const acc = currentAccount();
+    if (acc) {
+      const accounts = readAccounts();
+      const i = accounts.findIndex((a) => a.email === acc.email);
+      if (i >= 0) { accounts[i].plan = pickedPlan; accounts[i].planSince = Date.now(); writeAccounts(accounts); }
+    }
+    cloudSavePlan(pickedPlan);
+    render();
+  }
+
+  /* ---------------- đăng ký / đăng nhập ---------------- */
+  async function register() {
+    showErr('nsh-reg-error', '');
+    const name = vn(($('nsh-reg-name') || {}).value);
+    const email = vn(($('nsh-reg-email') || {}).value).toLowerCase();
+    const phone = vn(($('nsh-reg-phone') || {}).value);
+    const className = vn(($('nsh-reg-class') || {}).value);
+    const pass = ($('nsh-reg-pass') || {}).value || '';
+    const pass2 = ($('nsh-reg-pass2') || {}).value || '';
+
+    if (!name) return showErr('nsh-reg-error', 'Vui lòng nhập họ và tên.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showErr('nsh-reg-error', 'Email chưa đúng định dạng.');
+    if (phone && !/^[0-9+.\s-]{8,15}$/.test(phone)) return showErr('nsh-reg-error', 'Số điện thoại chưa hợp lệ.');
+    if (pass.length < 6) return showErr('nsh-reg-error', 'Mật khẩu cần ít nhất 6 ký tự.');
+    if (pass !== pass2) return showErr('nsh-reg-error', 'Hai mật khẩu không khớp.');
+
+    const accounts = readAccounts();
+    if (accounts.some((a) => a.email === email)) return showErr('nsh-reg-error', 'Email này đã đăng ký trên thiết bị. Hãy đăng nhập.');
+
+    const btn = $('nsh-reg-submit');
+    const busy = (on, text) => { if (btn) { btn.disabled = on; btn.textContent = on ? (text || 'Đang xử lý…') : 'Tạo tài khoản'; } };
+    const sm = window.SM_ACCT || {};
+    const cloud = typeof sm.firebaseReady === 'function' && sm.firebaseReady();
+    busy(true);
+
+    let acc;
+    try {
+      if (cloud) {
+        // Tài khoản thật trên Firebase — Admin xem được ở trang quản trị.
+        const fireUser = await sm.registerFirebase(name, email, pass);
+        await sm.saveProfile({
+          name, phone, className,
+          plan: pickedPlan,
+          planLabel: PLAN_NAME[pickedPlan],
+          signupAt: Date.now(),
+          app: 'nhip-sinh-hoc'
+        });
+        acc = { email, name, phone, className, plan: pickedPlan, uid: fireUser.uid, cloud: true, createdAt: Date.now() };
+      } else {
+        // Không có máy chủ: tài khoản lưu trên thiết bị, mật khẩu băm SHA-256.
+        const salt = randSalt();
+        const passHash = await hashPass(pass, salt);
+        acc = { email, name, phone, className, plan: pickedPlan, salt, passHash, cloud: false, createdAt: Date.now() };
+      }
+    } catch (e) {
+      busy(false);
+      const msg = (typeof sm.mapError === 'function' && sm.mapError(e)) || e.message || 'Không tạo được tài khoản. Thử lại sau.';
+      showErr('nsh-reg-error', msg);
+      return;
+    } finally { busy(false); }
+
+    accounts.unshift(acc);
+    if (!writeAccounts(accounts)) return showErr('nsh-reg-error', 'Trình duyệt không cho lưu dữ liệu. Kiểm tra chế độ riêng tư / bộ nhớ thiết bị.');
+
+    setSession(email);
+    applyPlan(acc.plan);
+    ['nsh-reg-name', 'nsh-reg-email', 'nsh-reg-phone', 'nsh-reg-class', 'nsh-reg-pass', 'nsh-reg-pass2'].forEach((id) => { const el = $(id); if (el) el.value = ''; });
+    toast('Đã tạo tài khoản', `Chào ${name}! Gói ${PLAN_NAME[acc.plan]} đã áp dụng. ${cloud ? 'Hồ sơ đã lưu trên máy chủ.' : 'Tài khoản lưu trên thiết bị này.'}`, 'ok');
+  }
+
+  async function login() {
+    showErr('nsh-login-error', '');
+    const email = vn(($('nsh-login-email') || {}).value).toLowerCase();
+    const pass = ($('nsh-login-pass') || {}).value || '';
+    if (!email || !pass) return showErr('nsh-login-error', 'Nhập đủ email và mật khẩu.');
+
+    const accounts = readAccounts();
+    let acc = accounts.find((a) => a.email === email);
+    const sm = window.SM_ACCT || {};
+    const cloud = typeof sm.firebaseReady === 'function' && sm.firebaseReady();
+
+    // Tài khoản cục bộ (có mật khẩu băm) kiểm tra trước — chạy được cả khi offline.
+    if (acc && acc.passHash) {
+      const hash = await hashPass(pass, acc.salt || '');
+      if (hash !== acc.passHash) return showErr('nsh-login-error', 'Mật khẩu chưa đúng.');
+      setSession(email);
+      applyPlan(acc.plan || 'free');
+      if ($('nsh-login-pass')) $('nsh-login-pass').value = '';
+      toast('Đã đăng nhập', `Chào mừng trở lại, ${acc.name || 'bạn'}.`, 'ok');
+      return;
+    }
+
+    if (cloud) {
+      try {
+        await sm.loginFirebase(email, pass);
+        const prof = (await sm.readProfile()) || {};
+        const plan = PLAN_KEYS.includes(prof.plan) ? prof.plan : ((acc && acc.plan) || 'free');
+        if (acc) { acc.plan = plan; acc.cloud = true; writeAccounts(accounts); }
+        else {
+          acc = { email, name: prof.name || email.split('@')[0], phone: prof.phone || '', className: prof.className || '', plan, cloud: true, createdAt: prof.createdAt || Date.now() };
+          accounts.unshift(acc); writeAccounts(accounts);
+        }
+        setSession(email);
+        applyPlan(plan);
+        if ($('nsh-login-pass')) $('nsh-login-pass').value = '';
+        toast('Đã đăng nhập', `Chào mừng trở lại, ${acc.name || 'bạn'}.`, 'ok');
+        return;
+      } catch (e) {
+        const msg = (typeof sm.mapError === 'function' && sm.mapError(e)) || e.message || 'Đăng nhập chưa được.';
+        return showErr('nsh-login-error', msg);
+      }
+    }
+
+    if (!acc) return showErr('nsh-login-error', 'Không tìm thấy tài khoản trên thiết bị này. Hãy đăng ký trước.');
+    return showErr('nsh-login-error', 'Mật khẩu chưa đúng.');
+  }
+
+  function logout() {
+    setSession('');
+    applyPlan('free');
+    toast('Đã đăng xuất', 'Tiến trình vẫn được giữ trên thiết bị.', 'info');
+  }
+
+  /* ---------------- chọn gói ---------------- */
+  function selectPlan(key) {
+    if (!PLAN_KEYS.includes(key)) return;
+    pickedPlan = key;
+    const acc = currentAccount();
+    if (!acc) {
+      markPlanButtons();
+      showErr('nsh-reg-error', '');
+      const card = $('nsh-signup-card');
+      if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const nameEl = $('nsh-reg-name');
+      if (nameEl && nameEl.focus) setTimeout(() => nameEl.focus(), 350);
+      toast('Đã chọn ' + PLAN_NAME[key], 'Điền thông tin để tạo tài khoản — gói sẽ được áp dụng ngay sau khi đăng ký.', 'info');
+      return;
+    }
+    const accounts = readAccounts();
+    const i = accounts.findIndex((a) => a.email === acc.email);
+    if (i >= 0) { accounts[i].plan = key; accounts[i].planSince = Date.now(); writeAccounts(accounts); }
+    cloudSavePlan(key);
+    applyPlan(key);
+    toast('Đã đổi gói', `${PLAN_NAME[key]} đã áp dụng trên thiết bị này. Không có khoản phí nào bị trừ.`, 'ok');
+  }
+
+  /* ---------------- gắn sự kiện ---------------- */
+  function bind() {
+    const on = (id, ev, fn) => { const el = $(id); if (el) el.addEventListener(ev, fn); };
+
+    // Đưa khối đăng ký + bảng gói lên ngay dưới phần giới thiệu của trang chủ.
+    const section = $('nsh-signup-section');
+    const hero = document.querySelector('.nsh-hero');
+    if (section && hero && section.previousElementSibling !== hero) hero.after(section);
+
+    document.querySelectorAll('#nsh-reg-plan .nsh-plan-opt').forEach((b) => {
+      b.addEventListener('click', () => { pickedPlan = b.dataset.plan; markPlanButtons(); showErr('nsh-reg-error', ''); });
+    });
+    document.querySelectorAll('#nsh-home-plans .nsh-pick').forEach((b) => {
+      b.addEventListener('click', () => selectPlan(b.dataset.pick));
+    });
+
+    on('nsh-reg-submit', 'click', register);
+    on('nsh-login-submit', 'click', login);
+    on('nsh-logout', 'click', logout);
+    on('nsh-show-login', 'click', () => {
+      const box = $('nsh-login-box');
+      if (box) box.classList.remove('hidden');
+      showErr('nsh-reg-error', '');
+      const el = $('nsh-login-email'); if (el) el.focus();
+    });
+    on('nsh-show-register', 'click', () => {
+      const box = $('nsh-login-box');
+      if (box) box.classList.add('hidden');
+      showErr('nsh-login-error', '');
+    });
+    ['nsh-reg-pass', 'nsh-reg-pass2', 'nsh-login-pass'].forEach((id) => {
+      on(id, 'keydown', (e) => { if (e.key === 'Enter') { id.startsWith('nsh-login') ? login() : register(); } });
+    });
+
+    render();
+    const acc = currentAccount();
+    if (acc) { pickedPlan = acc.plan || 'free'; applyPlan(acc.plan || 'free', { clearTrial: false }); render(); }
+  }
+
+  window.NSH_ACCOUNT = { register, login, logout, selectPlan, render, syncPlan, current: currentAccount };
+  document.addEventListener('DOMContentLoaded', bind);
+  if (document.readyState !== 'loading') bind();
 })();
