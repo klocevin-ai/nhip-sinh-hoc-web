@@ -175,11 +175,60 @@
     const badge = $('nsh-plan-badge');
     if (badge) badge.textContent = 'Gói: ' + (eff.trial ? `${PLAN_LABEL[eff.key]} (thử)` : PLAN_LABEL[eff.key]);
 
+    renderCurrentPlan(eff);
     calc();
     proj();
   }
 
-  function tick() { ensureTrial(); const cd = $('trial-countdown'); if (cd && S && S.plan && S.plan.trialEnd && Date.now() < S.plan.trialEnd) cd.textContent = 'Còn ' + fmtRemain(S.plan.trialEnd - Date.now()); }
+  /* ---------- bảng gói đang dùng ---------- */
+  function renderCurrentPlan(eff) {
+    const body = $('current-plan-body');
+    if (!body || !S) return;
+    const p = S.plan || {};
+    const priceText = {
+      free: '0₫ (miễn phí)',
+      thuong: '29.000₫/tháng · 129.000₫/năm',
+      'nghiem-tuc': '79.000₫/tháng · 379.000₫/năm',
+      truong: '5.000.000₫/năm'
+    };
+    const fmt = (ms) => ms ? new Date(ms).toLocaleString('vi-VN') : '—';
+    const rows = [
+      ['Tên gói', `<strong class="text-amber-300">${PLAN_LABEL[eff.key]}</strong>${eff.trial ? ' <span class="text-emerald-300">(đang dùng thử)</span>' : ''}`],
+      ['Nguồn', eff.trial ? 'Dùng thử 3 ngày · không cần thẻ' : (p.key && p.key !== 'free' ? 'Đã chọn trên thiết bị (mô phỏng)' : 'Mặc định')],
+      ['Thời hạn', eff.trial
+        ? `Hết hạn ${fmt(p.trialEnd)} · còn <span class="font-mono text-emerald-300">${fmtRemain(p.trialEnd - Date.now())}</span>`
+        : (p.since && p.key !== 'free' ? `Áp dụng từ ${fmt(p.since)}` : 'Không giới hạn')],
+      ['Giá niêm yết', priceText[eff.key] || '—'],
+      ['Số tiền đã trừ', '<span class="text-emerald-300 font-bold">0₫ — chưa kết nối thanh toán</span>'],
+      ['Mã gói', `<span class="font-mono text-slate-400">${eff.key}</span>`]
+    ];
+    body.innerHTML = rows.map(([k, v]) => `<tr>
+        <td class="border border-slate-800 px-3 py-2 text-slate-400">${k}</td>
+        <td class="border border-slate-800 px-3 py-2">${v}</td>
+      </tr>`).join('');
+
+    const ent = $('current-plan-entitlements');
+    if (ent) {
+      const items = [
+        ['Tính năng cốt lõi', true],
+        ['Báo cáo tuần', entitled('thuong')],
+        ['AI online', entitled('nghiem-tuc')],
+        ['Xuất dữ liệu chi tiết', entitled('nghiem-tuc')],
+        ['Quản lý trường/lớp', entitled('truong')]
+      ];
+      ent.innerHTML = items.map(([label, ok]) =>
+        `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${ok ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-slate-800/60 text-slate-500 border-slate-700'}">
+          <i class="fa-solid ${ok ? 'fa-check' : 'fa-lock'} mr-1"></i>${label}
+        </span>`).join('');
+    }
+  }
+
+  function tick() {
+    ensureTrial();
+    const cd = $('trial-countdown');
+    if (cd && S && S.plan && S.plan.trialEnd && Date.now() < S.plan.trialEnd) cd.textContent = 'Còn ' + fmtRemain(S.plan.trialEnd - Date.now());
+    if (document.getElementById('section-plans') && !document.getElementById('section-plans').classList.contains('hidden')) renderCurrentPlan(effective());
+  }
 
   /* ---------- máy tính chi phí ---------- */
   function calc() {
