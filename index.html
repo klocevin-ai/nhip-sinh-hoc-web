@@ -7980,7 +7980,7 @@ boot();
 
 initAI();
 </script>
-<script src="./firebase-config.js"></script>
+<script src="./firebase-config.js?v=20261123"></script>
 <script src="./cloud-loader.js"></script>
 
 <script>
@@ -8809,20 +8809,22 @@ window.SM_ACCT = (function () {
   function init() {
     setTab('login');
 
+    // Bản Nhịp Sinh Học: trang chủ luôn mở. Tài khoản đăng ký ngay trên trang chủ,
+    // nên lớp phủ đăng nhập không chặn người dùng nữa.
     if (!CONFIGURED) { hideGate(); return; }
     if (!initSDK()) {
       renderAccountChip();   // trống khi chưa đăng nhập
-      showPanel(true, false); // màn hướng dẫn cấu hình + nút dùng thử
+      hideGate();
       return;
     }
 
-    showPanel(false, true); // đã có SDK: hiện form đăng nhập
+    hideGate();
     auth.onAuthStateChanged(async (fireUser) => {
       if (!fireUser) {
         user = null;
         stopSync();
         renderAccountChip();
-        showPanel(false, true);
+        hideGate();
         return;
       }
       try {
@@ -8858,6 +8860,46 @@ window.SM_ACCT = (function () {
     });
   }
 
+  /* ------------------- đăng ký/đăng nhập dùng cho trang chủ ------------------- */
+  // Trả về true khi Firebase vừa có cấu hình vừa nạp được SDK.
+  function firebaseReady() { return !!(CONFIGURED && auth && db); }
+
+  function registerFirebase(name, email, pass) {
+    if (!auth) return Promise.reject(Object.assign(new Error('Chưa kết nối Firebase'), { code: 'nsh/no-sdk' }));
+    return auth.createUserWithEmailAndPassword(email, pass)
+      .then(async (cred) => {
+        try { await cred.user.updateProfile({ displayName: name }); } catch (e) { /* bỏ qua */ }
+        await ensureUserDoc(cred.user, name);
+        return cred.user;
+      });
+  }
+
+  function loginFirebase(email, pass) {
+    if (!auth) return Promise.reject(Object.assign(new Error('Chưa kết nối Firebase'), { code: 'nsh/no-sdk' }));
+    return auth.signInWithEmailAndPassword(email, pass);
+  }
+
+  /** Ghi thêm hồ sơ (SĐT, lớp, gói) vào users/{uid} của chính mình. */
+  function saveProfile(extra) {
+    if (!db || !auth || !auth.currentUser) return Promise.resolve(false);
+    return db.collection('users').doc(auth.currentUser.uid)
+      .set(extra || {}, { merge: true })
+      .then(() => true)
+      .catch((e) => { try { console.warn('[SM] saveProfile:', e); } catch (err) {} return false; });
+  }
+
+  /** Đọc hồ sơ users/{uid} (dùng khi đăng nhập lại để lấy gói đã lưu). */
+  async function readProfile() {
+    if (!db || !auth || !auth.currentUser) return null;
+    try {
+      const snap = await db.collection('users').doc(auth.currentUser.uid).get();
+      return snap && snap.exists ? snap.data() : null;
+    } catch (e) { return null; }
+  }
+
+  function showLogin() { showPanel(false, true); }
+  function hideAuthGate() { hideGate(); }
+
   return {
     init,
     login: doLogin,
@@ -8872,6 +8914,16 @@ window.SM_ACCT = (function () {
     applyAdminCommand,
     toggleMenu,
     isAdmin: () => !!(user && (user.role === 'admin' || isAdminEmail(user.email))),
+    /* Trang chủ dùng: */
+    firebaseReady,
+    registerFirebase,
+    loginFirebase,
+    saveProfile,
+    readProfile,
+    showLogin,
+    hideAuthGate,
+    mapError: mapAuthError,
+    currentUser: () => user,
     /* --- 3.5: Đêm Đồng Bộ --- */
     setGroupNight,
     canSync,

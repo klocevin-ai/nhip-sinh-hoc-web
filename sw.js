@@ -1,6 +1,6 @@
 const PREFIX = 'nhip-sinh-hoc-';
-const CACHE = PREFIX + 'v3';
-const CORE = ['./', './index.html', './manifest.webmanifest', './firebase-config.js', './cloud-loader.js', './independent.js', './independent.css', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './vendor/tailwind.css', './vendor/fontawesome/all.min.css', './vendor/fonts/fonts.css', './vendor/fontawesome/webfonts/fa-solid-900.woff2', './vendor/fontawesome/webfonts/fa-regular-400.woff2', './vendor/fontawesome/webfonts/fa-brands-400.woff2', ...['quicksand','jetbrains-mono'].flatMap(f => ['latin','latin-ext','vietnamese'].map(l => `./vendor/fonts/${f}-400-${l}.woff2`))];
+const CACHE = PREFIX + 'v5';
+const CORE = ['./', './index.html', './admin.html', './manifest.webmanifest', './firebase-config.js?v=20261123', './cloud-loader.js', './independent.js', './independent.css', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './vendor/tailwind.css', './vendor/tailwind-admin.css', './vendor/fontawesome/all.min.css', './vendor/fonts/fonts.css', './vendor/fontawesome/webfonts/fa-solid-900.woff2', './vendor/fontawesome/webfonts/fa-regular-400.woff2', './vendor/fontawesome/webfonts/fa-brands-400.woff2', ...['quicksand','jetbrains-mono'].flatMap(f => ['latin','latin-ext','vietnamese'].map(l => `./vendor/fonts/${f}-400-${l}.woff2`))];
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(CACHE);
   await cache.addAll(CORE);
@@ -16,8 +16,11 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     if (event.request.mode === 'navigate') {
-      try { const res = await fetch(event.request); cache.put('./index.html', res.clone()); return res; }
-      catch (_) { return await cache.match('./index.html'); }
+      try { const res = await fetch(event.request); cache.put(event.request, res.clone()); return res; }
+      catch (_) {
+        // Offline: trả đúng trang đã lưu, nếu không có thì về trang chủ.
+        return (await cache.match(event.request)) || (await cache.match('./index.html'));
+      }
     }
     // stale-while-revalidate: trả cache ngay, cập nhật nền để lần sau có bản mới
     const hit = await cache.match(event.request);
